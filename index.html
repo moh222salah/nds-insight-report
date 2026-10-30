@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>NDS Report Studio</title>
+<script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.card{background:#fff;border:1px solid #E1E8F2;border-radius:14px}
+.btn{font-family:Cairo,sans-serif;font-size:14px;font-weight:600;border-radius:10px;padding:0 18px;height:44px;cursor:pointer;border:1px solid #2563EB;background:#fff;color:#2563EB}
+.btn-p{background:#2563EB;color:#fff}
+.btn-g{background:#10B981;border-color:#10B981;color:#0F172A}
+.cb{display:flex;align-items:center;gap:10px;min-height:44px;font-size:14px;color:#0F172A;cursor:pointer}
+.cb input{width:18px;height:18px;accent-color:#2563EB}
+.tab{font-family:Cairo,sans-serif;font-size:14px;font-weight:600;height:48px;padding:0 20px;background:transparent;border:0;border-bottom:3px solid transparent;color:#C9D6EA;cursor:pointer}
+.tab-on{color:#fff;border-bottom-color:#10B981}
+.chip{display:inline-block;padding:4px 12px;border-radius:999px;font-size:12px;font-weight:600}
+.th{text-align:start;font-size:12px;font-weight:700;color:#64748B;padding:12px 16px;background:#F3F6FB}
+.td{padding:14px 16px;font-size:14px;color:#0F172A;border-top:1px solid #E1E8F2}
+.gt{margin:0 0 6px;font-size:15px;font-weight:700;color:#0F172A;padding-bottom:8px;border-bottom:2px solid #10B981;display:inline-block}
+.si{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 14px;border-radius:10px;font-size:14px;font-weight:600;color:#0F172A;text-decoration:none}
+.si:hover{background:#EEF3FB}
+.si-on{background:#E7EFFE;color:#1D4ED8;box-shadow:inset -3px 0 0 #2563EB}
+.sg{margin:18px 14px 6px;font-size:12px;font-weight:700;color:#64748B}
+</style>
+</helmet>
+<div style="font-family:Cairo,Inter,sans-serif;background:#F3F6FB;min-height:1240px;color:#0F172A;display:flex;flex-wrap:wrap;align-items:stretch"><aside aria-label="القائمة الجانبية (توضيحي)" style="flex:0 0 280px;background:#fff;border-inline-start:1px solid #E1E8F2;padding:16px 8px;box-sizing:border-box"><div class="sg" style="margin-top:4px">NDS Report Studio</div><a href="#" class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect></svg>نظرة عامة</a><a href="#" class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect></svg>مكتبة التقارير</a><a href="#" class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect></svg>مصمم التقارير</a><a href="#" class="si si-on"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect></svg>الصلاحيات</a><a href="#" class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect></svg>القوالب</a><a href="#" class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect></svg>سجل التشغيل</a><div class="sg">تقاريري</div><a href="#" class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect></svg>المنشورة</a><a href="#" class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect></svg>المسودات</a><a href="#" class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect></svg>المشتركة معي</a><a href="#" class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect></svg>المفضلة</a><div class="sg">مصادر البيانات</div><a href="#" class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect></svg>فواتير المبيعات</a><a href="#" class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect></svg>فواتير المشتريات</a><a href="#" class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect></svg>الأصناف والمخزون</a><a href="#" class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect></svg>العملاء والموردون</a><div class="sg">الإدارة</div><a href="#" class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect></svg>قواعد الوصول</a><a href="#" class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect></svg>إصدارات التقارير</a><a href="#" class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect></svg>جدولة التقارير</a><p style="margin:18px 14px 0;font-size:12px;color:#64748B">توضيحي: التنفيذ الفعلي داخل السايد بار الحالي للنظام.</p></aside><div style="flex:1 1 640px;min-width:0">
+
+<div style="max-width:1360px;margin:0 auto;padding:24px 24px 0;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+<div style="flex:1;min-width:220px"><h1 style="margin:0;font-size:24px;font-weight:700;color:#0F172A">الصلاحيات</h1><div style="font-size:13px;color:#64748B">NDS Report Studio — يظهر تحت هيدر النظام الأصلي بدون هيدر خاص بالموديول</div></div>
+<button class="btn btn-p" type="button">+ تقرير جديد</button>
+</div>
+
+<main style="max-width:1360px;margin:0 auto;padding:24px">
+
+<section aria-label="ملخص" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px">
+<div class="card" style="padding:18px 20px"><div style="font-size:13px;color:#64748B">تقاريري</div><div style="font-size:30px;font-weight:700;color:#0F172A">—</div><div style="font-size:12px;color:#64748B">يُحمّل من قاعدة البيانات</div></div>
+<div class="card" style="padding:18px 20px"><div style="font-size:13px;color:#64748B">المشتركة معي</div><div style="font-size:30px;font-weight:700;color:#0F172A">—</div><div style="font-size:12px;color:#64748B">بحسب الصلاحيات الفعلية</div></div>
+<div class="card" style="padding:18px 20px"><div style="font-size:13px;color:#64748B">تشغيلات اليوم</div><div style="font-size:30px;font-weight:700;color:#0F172A">—</div><div style="font-size:12px;color:#64748B">من سجل التشغيل</div></div>
+<div class="card" style="padding:18px 20px"><div style="font-size:13px;color:#64748B">المستخدمون المخوّلون</div><div style="font-size:30px;font-weight:700;color:#0F172A">—</div><div style="font-size:12px;color:#64748B">من المستخدمين والأدوار</div></div>
+</section>
+
+<section aria-label="مصادر البيانات" style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+<span style="font-size:13px;font-weight:700;color:#0F172A">مصادر البيانات المعتمدة:</span>
+<span class="chip" style="background:#E7EFFE;color:#0F172A">فواتير المبيعات</span>
+<span class="chip" style="background:#E7EFFE;color:#0F172A">فواتير المشتريات</span>
+<span class="chip" style="background:#E7EFFE;color:#0F172A">أوامر البيع والشراء</span>
+<span class="chip" style="background:#E7EFFE;color:#0F172A">الأصناف والمخزون</span>
+<span class="chip" style="background:#E7EFFE;color:#0F172A">العملاء والموردون</span>
+<span class="chip" style="background:#E7EFFE;color:#0F172A">قيود الحسابات</span>
+</section>
+
+<section class="card" aria-label="إدارة الصلاحيات" style="margin-top:20px;padding:0;overflow:hidden">
+<div style="padding:20px 24px;border-bottom:1px solid #E1E8F2;display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end">
+<div style="flex:1;min-width:220px"><div style="font-size:18px;font-weight:700;color:#0F172A">إدارة الصلاحيات</div><div style="font-size:13px;color:#64748B">اختر موظفًا أو دورًا لعرض صلاحياته وتعديلها</div></div>
+<fieldset style="border:1px solid #E1E8F2;border-radius:10px;padding:3px;display:flex;gap:3px;margin:0">
+<legend style="position:absolute;left:-9999px">نوع المستهدف</legend>
+<button class="btn btn-p" type="button" style="height:38px">موظف</button>
+<button class="btn" type="button" style="height:38px;border-color:transparent">دور وظيفي</button>
+</fieldset>
+<label style="display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:#64748B">اختيار الموظف
+<select style="font-family:Cairo,sans-serif;font-size:14px;height:44px;min-width:280px;border:1px solid #2563EB;border-radius:10px;padding:0 12px;color:#0F172A;background:#fff"><option>اختر من قائمة المستخدمين</option></select></label>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px 40px;padding:20px 24px">
+<div><h3 class="gt">الوصول</h3>
+<label class="cb"><input type="checkbox" checked=""> عرض مكتبة التقارير</label>
+<label class="cb"><input type="checkbox" checked=""> فتح التقرير</label>
+<label class="cb"><input type="checkbox" checked=""> تشغيل التقرير</label></div>
+<div><h3 class="gt">الإنشاء والتحرير</h3>
+<label class="cb"><input type="checkbox" checked=""> إنشاء تقرير</label>
+<label class="cb"><input type="checkbox" checked=""> تعديل تقاريري</label>
+<label class="cb"><input type="checkbox"> تعديل تقارير الآخرين</label>
+<label class="cb"><input type="checkbox"> نسخ تقرير</label></div>
+<div><h3 class="gt">المخرجات</h3>
+<label class="cb"><input type="checkbox" checked=""> طباعة</label>
+<label class="cb"><input type="checkbox"> تصدير PDF</label>
+<label class="cb"><input type="checkbox"> تصدير Excel</label>
+<label class="cb"><input type="checkbox"> تصدير CSV</label></div>
+<div><h3 class="gt">المشاركة</h3>
+<label class="cb"><input type="checkbox"> مشاركة مع مستخدم</label>
+<label class="cb"><input type="checkbox"> مشاركة مع دور</label>
+<label class="cb"><input type="checkbox"> نشر التقرير</label></div>
+<div><h3 class="gt">الإدارة</h3>
+<label class="cb"><input type="checkbox"> حذف تقرير</label>
+<label class="cb"><input type="checkbox"> إدارة القوالب</label>
+<label class="cb"><input type="checkbox"> إدارة الصلاحيات</label></div>
+<div><h3 class="gt">بيانات حساسة وأتمتة</h3>
+<label class="cb"><input type="checkbox"> الحقول المالية المقيدة</label>
+<label class="cb"><input type="checkbox"> جدولة التقارير</label>
+<label class="cb"><input type="checkbox"> إرسال المخرجات بالبريد</label></div>
+</div>
+
+<div style="padding:16px 24px;background:#F3F6FB;border-top:1px solid #E1E8F2;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+<button class="btn btn-p" type="button">حفظ الصلاحيات</button>
+<button class="btn" type="button">تحديد/إلغاء الكل</button>
+<span style="font-size:12px;color:#64748B">تُفحص الصلاحيات من الخادم عند كل تشغيل أو تصدير</span>
+</div>
+</section>
+
+<section class="card" aria-label="تقارير الموظف المختار" style="margin-top:20px;overflow:hidden">
+<div style="padding:20px 24px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+<div style="flex:1;min-width:220px"><div style="font-size:18px;font-weight:700;color:#0F172A">تقارير الموظف المختار</div><div style="font-size:13px;color:#64748B">تظهر تلقائيًا عند الاختيار: التقارير التي أنشأها فقط</div></div>
+<button class="btn" type="button">تشغيل</button>
+<button class="btn btn-p" type="button">فتح في المصمم</button>
+</div>
+<div style="overflow-x:auto">
+<table style="width:100%;border-collapse:collapse;min-width:720px">
+<thead><tr><th class="th">اسم التقرير</th><th class="th">مصدر البيانات</th><th class="th">الأعمدة</th><th class="th">الحالة</th><th class="th">إجراءات</th></tr></thead>
+<tbody>
+<tr><td class="td" style="font-weight:600">فواتير المبيعات حسب العميل</td><td class="td">فواتير المبيعات</td><td class="td">رقم الفاتورة، التاريخ، العميل، الإجمالي</td><td class="td"><span class="chip" style="background:#DDF3E4;color:#0B5A2A">منشور</span></td><td class="td"><button class="btn" type="button" style="height:36px">تشغيل</button></td></tr>
+<tr><td class="td" style="font-weight:600">مشتريات الموردين</td><td class="td">فواتير المشتريات</td><td class="td">رقم الفاتورة، المورد، الضريبة، الصافي</td><td class="td"><span class="chip" style="background:#FBF0CF;color:#6B4E00">مسودة</span></td><td class="td"><button class="btn" type="button" style="height:36px">تشغيل</button></td></tr>
+<tr><td class="td" style="font-weight:600">أصناف الأكثر مبيعًا</td><td class="td">فواتير المبيعات — الأصناف</td><td class="td">الصنف، الكمية، المبلغ الصافي</td><td class="td"><span class="chip" style="background:#DDF3E4;color:#0B5A2A">منشور</span></td><td class="td"><button class="btn" type="button" style="height:36px">تشغيل</button></td></tr>
+</tbody></table>
+</div>
+<div style="padding:12px 24px;font-size:12px;color:#64748B;border-top:1px solid #E1E8F2">الأسماء أعلاه توضيحية لشكل الشاشة فقط؛ في التنفيذ تُحمَّل من قاعدة بيانات النظام.</div>
+</section>
+
+</main>
+</div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1240}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
