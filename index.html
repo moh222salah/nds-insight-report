@@ -30,6 +30,40 @@ body{margin:0}
 .si-on{background:#E7EFFE;color:#1D4ED8;box-shadow:inset -3px 0 0 #2563EB}
 .sg{margin:18px 14px 6px;font-size:12px;font-weight:700;color:#64748B}
 </style>
+<style>
+.nds-report-layout{display:flex;flex-wrap:nowrap;align-items:stretch;min-height:100vh;width:100%;overflow-x:hidden}
+.nds-report-sidebar{flex:0 0 260px;max-width:260px}
+.nds-report-content{flex:1 1 0;min-width:0;width:calc(100% - 260px)}
+.nds-report-content main{width:100%;max-width:1360px;box-sizing:border-box}
+.nds-report-content button:focus-visible,.nds-report-content a:focus-visible,.nds-report-content input:focus-visible,.nds-report-content select:focus-visible{outline:3px solid #93C5FD;outline-offset:2px}
+.nds-report-layout .card{transition:box-shadow .18s ease,transform .18s ease}
+.nds-report-layout .card:hover{box-shadow:0 5px 18px #0F172A0b}
+.nds-report-layout .btn{transition:background .15s ease,transform .15s ease}
+.nds-report-layout .btn:active{transform:translateY(1px)}
+@media(max-width:900px){
+.nds-report-layout{flex-direction:column;min-height:100dvh}
+.nds-report-sidebar{flex:none;width:100%;max-width:none;display:flex;gap:6px;overflow-x:auto;white-space:nowrap;padding:8px 10px!important;border-inline-start:0;border-bottom:1px solid #E1E8F2}
+.nds-report-sidebar .sg,.nds-report-sidebar p{display:none}
+.nds-report-sidebar .si{flex:0 0 auto;min-height:40px;padding:0 12px;font-size:13px}
+.nds-report-content{width:100%;min-width:0;flex:1 1 auto}
+.nds-report-content>div:first-child{padding:16px 14px 0!important}
+.nds-report-content main{padding:14px!important}
+}
+@media(max-width:560px){
+.nds-report-content>div:first-child h1{font-size:21px!important}
+.nds-report-content main{padding:10px!important}
+.nds-report-content section[aria-label="ملخص"]{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+.nds-report-content section[aria-label="ملخص"] .card{padding:14px!important}
+.nds-report-content section[aria-label="إدارة الصلاحيات"]>div:nth-child(2){grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px!important;padding:16px!important}
+.nds-report-content section[aria-label="إدارة الصلاحيات"] select{min-width:0!important;width:100%}
+.nds-report-content .td{padding:10px!important;font-size:12px!important}
+.nds-report-content .th{padding:10px!important}
+}
+@media(max-width:380px){
+.nds-report-content section[aria-label="ملخص"]{grid-template-columns:1fr!important}
+.nds-report-content section[aria-label="إدارة الصلاحيات"]>div:nth-child(2){grid-template-columns:1fr!important}
+}
+</style>
 </helmet>
 <div style="font-family:Cairo,Inter,sans-serif;background:#F3F6FB;min-height:1240px;color:#0F172A;display:flex;flex-wrap:nowrap;align-items:stretch" class="nds-report-layout"><aside aria-label="القائمة الجانبية" class="nds-report-sidebar" style="flex:0 0 280px;background:#fff;border-inline-start:1px solid #E1E8F2;padding:16px 8px;box-sizing:border-box"><div class="sg" style="margin-top:4px">NDS Report Studio</div><a href="#" class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect></svg>نظرة عامة</a><a href="#" class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect></svg>مكتبة التقارير</a><a href="#" class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect></svg>مصمم التقارير</a><a href="#" class="si si-on"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect></svg>الصلاحيات</a><a href="#" class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect></svg>القوالب</a><a href="#" class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect></svg>سجل التشغيل</a><div class="sg">تقاريري</div><a href="#" class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect></svg>المنشورة</a><a href="#" class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect></svg>المسودات</a><a href="#" class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect></svg>المشتركة معي</a><a href="#" class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect></svg>المفضلة</a><div class="sg">مصادر البيانات</div><a href="#" class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect></svg>فواتير المبيعات</a><a href="#" class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect></svg>فواتير المشتريات</a><a href="#" class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect></svg>الأصناف والمخزون</a><a href="#" class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect></svg>العملاء والموردون</a><div class="sg">الإدارة</div><a href="#" class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect></svg>قواعد الوصول</a><a href="#" class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect></svg>إصدارات التقارير</a><a href="#" class="si"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect></svg>جدولة التقارير</a><p style="margin:18px 14px 0;font-size:12px;color:#64748B">توضيحي: التنفيذ الفعلي داخل السايد بار الحالي للنظام.</p></aside><div class="nds-report-content" style="flex:1 1 640px;min-width:0">
 
@@ -126,6 +160,23 @@ body{margin:0}
 </main>
 </div></div>
 </x-dc>
+<script>
+function ndsReportUIActions(){
+const root=document.querySelector('.nds-report-layout');if(!root)return;
+const links=[...root.querySelectorAll('aside a.si')];
+const routes=['#/overview','#/library','#/designer','#/permissions','#/templates','#/runlog','#/published','#/drafts','#/shared','#/favorites','#/source-sales','#/source-purchases','#/source-stock','#/source-partners','#/access','#/versions','#/schedules'];
+links.forEach((a,i)=>{a.href=routes[i]||'#';});
+const newReport=root.querySelector('a.btn-p[href="./nds-report-studio.html"]');
+if(newReport)newReport.addEventListener('click',e=>{e.preventDefault();location.href=new URL('./nds-report-studio.html',location.href).href;});
+const boxes=[...root.querySelectorAll('input[type=checkbox]')];
+const all=[...root.querySelectorAll('button')].find(b=>b.textContent.trim()==='تحديد/إلغاء الكل');
+if(all)all.addEventListener('click',()=>{const checked=!boxes.every(x=>x.checked);boxes.forEach(x=>x.checked=checked);});
+const save=[...root.querySelectorAll('button')].find(b=>b.textContent.trim()==='حفظ الصلاحيات');
+if(save)save.addEventListener('click',()=>alert('تم تغيير حالة الاختيارات بالواجهة فقط. يلزم ربط ERPNext لحفظ الصلاحيات فعليًا.'));
+root.querySelectorAll('button').forEach(b=>{const t=b.textContent.trim();if(t==='تشغيل')b.addEventListener('click',()=>alert('تشغيل التقرير يتطلب اتصالًا ببيانات ERPNext.'));if(t==='فتح في المصمم')b.addEventListener('click',()=>location.href='./nds-report-studio.html');});
+}
+document.addEventListener('DOMContentLoaded',ndsReportUIActions);
+</script>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1240}}'>
 class Component extends DCLogic {
 renderVals() { return {}; }
