@@ -58,4 +58,88 @@ document.addEventListener('change',e=>{if(e.target.id==='target'){state.who=e.ta
 document.addEventListener('input',e=>{if(e.target.id==='report-name')state.name=e.target.value});
 window.addEventListener('hashchange',route);function route(){const p=decodeURIComponent(location.hash.slice(1)).split('/');state.route=p[1]||'overview';state.source=p[1]==='designer'?(p[2]||''):'';render()}
 route();
+</script>
+<script>
+/* Local report lifecycle: create, persist, edit, preview, run and export without ERPNext. */
+(function(){
+const STORE='nds-report-studio-reports-v1';
+const read=()=>{try{return JSON.parse(localStorage.getItem(STORE)||'[]')}catch(_){return []}};
+const write=items=>localStorage.setItem(STORE,JSON.stringify(items));
+state.reports=read();
+state.editId=null;
+state.runRows=[];
+const sampleRows={
+'Sales Invoice':[['SINV-0001','2026-10-30','شركة شمس الرياض','الرياض','575.00','معتمد'],['SINV-0002','2026-10-29','E-Max','الرياض','57.50','مسودة'],['SINV-0003','2026-10-28','مؤسسة النور','جدة','1250.00','معتمد']],
+'Purchase Invoice':[['PINV-0001','2026-10-30','مورد الخليج','الرياض','820.00','معتمد'],['PINV-0002','2026-10-26','شركة الإمداد','جدة','210.00','مسودة']],
+'Item':[['ITEM-001','2026-10-21','صنف تجريبي','الرياض','50.00','نشط'],['ITEM-002','2026-10-20','منتج آخر','جدة','75.00','نشط']]
+};
+const rowsFor=()=>sampleRows[state.source]||[['DOC-0001','2026-10-30','سجل تجريبي','الرياض','100.00','معتمد'],['DOC-0002','2026-10-25','سجل آخر','جدة','250.00','مسودة']];
+const fieldNames=()=>sourceFields();
+function filtered(){
+let rows=rowsFor();
+const from=$('#from')?.value||state.filters.from,to=$('#to')?.value||state.filters.to,status=$('#status')?.value||state.filters.status;
+return rows.filter(r=>(!from||r[1]>=from)&&(!to||r[1]<=to)&&(!status||((status==='0'&&r[5]==='مسودة')||(status==='1'&&r[5]==='معتمد')||(status==='2'&&r[5]==='ملغى'))));
+}
+function csvDownload(){
+const rows=state.runRows.length?state.runRows:filtered().map(r=>state.columns.map(c=>r[fieldNames().indexOf(c)]??''));
+const csv=[state.columns,...rows].map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');
+const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});
+const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=(state.name||'report')+'.csv';a.click();URL.revokeObjectURL(url);
+}
+function handle(e){
+const btn=e.target.closest('[data-action]');if(!btn)return;
+const action=btn.dataset.action;
+const ours=['save','preview','open','mine','all','export-csv','run','new-report','edit-report','delete-report','reset-designer'];
+if(!ours.includes(action))return;
+e.preventDefault();e.stopImmediatePropagation();
+if(action==='save'){
+ const name=($('#report-name')?.value||state.name).trim();if(!name){alert('اكتب اسم التقرير أولًا.');return;}
+ if(!state.source||!state.columns.length){alert('حدد مصدر البيانات وعمودًا واحدًا على الأقل.');return;}
+ const all=read(),item={id:state.editId||('rpt-'+Date.now()),name,ref_doctype:state.source,columns:[...state.columns],filters:{from:$('#from')?.value||'',to:$('#to')?.value||'',status:$('#status')?.value||''},modified:new Date().toISOString(),owner:'هذا المتصفح',rows:rowsFor()};
+ const idx=all.findIndex(x=>x.id===item.id);if(idx>=0)all[idx]=item;else all.unshift(item);
+ write(all);state.reports=all;state.editId=item.id;state.name=name;
+ alert('تم حفظ التقرير في مساحة هذا المتصفح. يمكنك فتحه وتشغيله دون ERPNext.');state.route='library';location.hash='#/library';render();return;
+}
+if(action==='preview'||action==='run'){
+ state.name=$('#report-name')?.value||state.name;state.filters={from:$('#from')?.value||'',to:$('#to')?.value||'',status:$('#status')?.value||''};
+ state.runRows=filtered().map(r=>state.columns.map(c=>r[fieldNames().indexOf(c)]??''));
+ state.preview=state.runRows;render();
+ if(action==='run')setTimeout(()=>document.querySelector('#report-results')?.scrollIntoView({behavior:'smooth',block:'start'}),60);
+ return;
+}
+if(action==='export-csv'){csvDownload();return;}
+if(action==='mine'||action==='all'){state.reports=read();render();return;}
+if(action==='open'||action==='edit-report'){
+ const id=btn.dataset.id;const report=read().find(r=>r.id===id);if(!report)return;
+ state.editId=report.id;state.name=report.name;state.source=report.ref_doctype;state.columns=[...report.columns];state.filters={...report.filters};state.preview=[];state.runRows=[];
+ state.route='designer';location.hash='#/designer/'+encodeURIComponent(state.source);render();return;
+}
+if(action==='delete-report'){
+ if(!confirm('حذف التقرير المحفوظ من هذا المتصفح؟'))return;
+ const all=read().filter(r=>r.id!==btn.dataset.id);write(all);state.reports=all;render();return;
+}
+if(action==='new-report'){state.editId=null;state.name='';state.source='';state.columns=[];state.filters={from:'',to:'',status:''};state.preview=[];state.runRows=[];location.hash='#/designer';return;}
+if(action==='reset-designer'){state.editId=null;state.name='';state.source='';state.columns=[];state.preview=[];state.runRows=[];location.hash='#/designer';}
+}
+document.addEventListener('click',handle,true);
+const originalLibrary=library;
+library=function(){
+ state.reports=read();
+ const rows=state.reports;
+ return header('مكتبة التقارير','تقارير محفوظة محليًا — لا يلزم اتصال ERPNext')+
+ '<div class="card"><div class="pd row"><button class="btn p" data-action="new-report">إنشاء تقرير</button><input type="search" id="report-search" class="fx" placeholder="ابحث باسم التقرير أو المصدر"></div><div class="tw"><table><thead><tr><th>اسم التقرير</th><th>المصدر</th><th>الأعمدة</th><th>آخر تعديل</th><th>إجراءات</th></tr></thead><tbody id="report-list">'+rows.map(r=>'<tr><td>'+esc(r.name)+'</td><td>'+esc(r.ref_doctype)+'</td><td>'+esc(r.columns.join('، '))+'</td><td>'+esc(new Date(r.modified).toLocaleString('ar-EG'))+'</td><td><button class="btn s" data-action="open" data-id="'+esc(r.id)+'">فتح / تعديل</button> <button class="btn s" data-action="run" data-id="'+esc(r.id)+'">تشغيل</button> <button class="btn s" data-action="delete-report" data-id="'+esc(r.id)+'">حذف</button></td></tr>').join('')+'</tbody></table></div><div class="ft"><span class="mt">الحفظ محلي في هذا المتصفح فقط، ويمكن تصدير النتائج CSV.</span></div></div>';
+};
+const oldDesigner=designer;
+designer=function(){
+ const html=oldDesigner();
+ return html.replace('<button class="btn p" data-action="preview">معاينة</button>','<button class="btn p" data-action="preview">معاينة النتائج</button><button class="btn" data-action="run">تشغيل التقرير</button><button class="btn" data-action="export-csv">تصدير CSV</button>')
+ .replace('<div class="card"><div class="tw"><table>','<div class="card" id="report-results"><div class="tw"><table>');
+};
+document.addEventListener('input',e=>{
+ if(e.target.id!=='report-search')return;
+ const term=e.target.value.toLowerCase();
+ document.querySelectorAll('#report-list tr').forEach(tr=>tr.style.display=tr.textContent.toLowerCase().includes(term)?'':'none');
+});
+window.addEventListener('storage',e=>{if(e.key===STORE){state.reports=read();if(state.route==='library')render();}});
+})();
 </script></body></html>
