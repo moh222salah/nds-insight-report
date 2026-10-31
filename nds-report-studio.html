@@ -101,6 +101,7 @@ if(action==='save'){
  alert('تم حفظ التقرير في مساحة هذا المتصفح. يمكنك فتحه وتشغيله دون ERPNext.');state.route='library';location.hash='#/library';render();return;
 }
 if(action==='preview'||action==='run'){
+ if(btn.dataset.id){const saved=read().find(r=>r.id===btn.dataset.id);if(saved){state.editId=saved.id;state.name=saved.name;state.source=saved.ref_doctype;state.columns=[...saved.columns];state.filters={...saved.filters};location.hash='#/designer/'+encodeURIComponent(state.source);}}
  state.name=$('#report-name')?.value||state.name;state.filters={from:$('#from')?.value||'',to:$('#to')?.value||'',status:$('#status')?.value||''};
  state.runRows=filtered().map(r=>state.columns.map(c=>r[fieldNames().indexOf(c)]??''));
  state.preview=state.runRows;render();
