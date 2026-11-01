@@ -35,6 +35,148 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 @media(max-width:560px){.top h1{font-size:21px}.top>div{min-width:0}#view{padding:10px!important}.pad{padding:14px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.field{min-width:0}.row{align-items:stretch}.btn{padding:0 12px}.table-wrap th,.table-wrap td{padding:10px;font-size:12px}}
 @media(max-width:380px){.grid{grid-template-columns:1fr}.top{gap:10px}.top>div{min-width:100%}}
 @media print{.side,.top .btn,.no-print,.footer{display:none!important}.app{display:block}.main{padding:0}.top{padding:0}#view{padding:0}.card{break-inside:avoid}}
+
+/* NDS Report Studio — overview dashboard */
+.home-dashboard{display:grid;gap:20px;animation:homeEnter .55s ease both}
+@keyframes homeEnter{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.home-dashboard *{box-sizing:border-box}
+.home-hero{position:relative;isolation:isolate;overflow:hidden;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(270px,.8fr);align-items:center;min-height:284px;padding:34px 42px;border-radius:24px;color:#fff;background:linear-gradient(115deg,#101B3A 0%,#172B54 49%,#203D72 100%);box-shadow:0 18px 42px #172b5426}
+.home-hero:before{content:"";position:absolute;inset:0;z-index:-1;opacity:.22;background-image:linear-gradient(#a8c5ff15 1px,transparent 1px),linear-gradient(90deg,#a8c5ff15 1px,transparent 1px);background-size:32px 32px;mask-image:linear-gradient(90deg,black,transparent 80%)}
+.home-hero-glow{position:absolute;z-index:-1;width:430px;height:430px;border-radius:50%;background:radial-gradient(circle,#4f71c74a 0%,#4f71c700 70%);top:-190px;left:4%}
+.home-hero-copy{position:relative;z-index:2;max-width:680px}
+.home-eyebrow,.home-section-kicker{display:inline-flex;align-items:center;gap:8px;color:#91A9E9;font:800 10px/1.4 Inter,Cairo,sans-serif;letter-spacing:1.35px}
+.home-eyebrow i,.home-live-label i,.home-chart-note i{width:7px;height:7px;border-radius:50%;background:#31D6A0;box-shadow:0 0 0 4px #31d6a01c}
+.home-hero h2{font-size:clamp(27px,3vw,39px);line-height:1.35;margin:13px 0 10px;color:#fff;font-weight:800;letter-spacing:-.7px}
+.home-hero h2 em{font-style:normal;color:#D9C17A}
+.home-hero-copy>p{max-width:580px;margin:0;color:#C1CDE5;font-size:14px;line-height:2}
+.home-hero-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:22px}
+.home-primary-action,.home-secondary-action{min-height:46px;padding:0 19px;border-radius:11px;font:700 13px Cairo,Inter,sans-serif;cursor:pointer;transition:transform .2s,box-shadow .2s,background .2s}
+.home-primary-action{border:1px solid #E2CA83;color:#18264A;background:linear-gradient(135deg,#F0D993,#D4AF57);box-shadow:0 8px 20px #d4af372b}
+.home-primary-action span{font-size:17px;margin-inline-end:7px}
+.home-primary-action:hover{transform:translateY(-2px);box-shadow:0 12px 24px #d4af3740}
+.home-secondary-action{border:1px solid #8195BD66;color:#E7EDFA;background:#ffffff0d}
+.home-secondary-action:hover{background:#ffffff18;transform:translateY(-2px)}
+.home-secondary-action span{margin-inline-start:9px;color:#E0C77B}
+.home-hero-meta{display:flex;gap:20px;flex-wrap:wrap;margin-top:22px;color:#9DADCB;font-size:11px}
+.home-hero-meta>span{display:inline-flex;align-items:center;gap:8px}
+.home-meta-dot{width:6px;height:6px;background:#31D6A0;border-radius:50%}
+.home-hero-visual{position:relative;min-height:220px;display:grid;place-items:center}
+.home-orbit{position:absolute;border:1px solid #8DA9E53B;border-radius:50%;transform:rotate(-24deg)}
+.orbit-one{width:190px;height:190px;animation:orbitFloat 12s linear infinite}
+.orbit-two{width:245px;height:125px;border-color:#D7BD784F;transform:rotate(36deg);animation:orbitFloat 17s linear infinite reverse}
+.orbit-three{width:260px;height:260px;border-style:dashed;border-color:#a9c2ec24;animation:orbitFloat 26s linear infinite}
+@keyframes orbitFloat{to{transform:rotate(336deg)}}
+.home-hero-core{position:relative;z-index:1;width:132px;height:132px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle at 34% 25%,#49649b,#182c54 68%);border:1px solid #D4AF3770;box-shadow:0 0 0 9px #ffffff07,0 0 46px #7698e44a;text-align:center}
+.home-core-symbol{font:800 19px Inter,Cairo,sans-serif;letter-spacing:2px;color:#E5D08F}
+.home-hero-core b{font:800 9px/1.3 Inter,Cairo,sans-serif;color:#F3F6FD;letter-spacing:1.3px;margin-top:5px}
+.home-hero-core small{font:600 7px Inter,Cairo,sans-serif;color:#9BAFD2;letter-spacing:1.3px;margin-top:6px}
+.home-float-card{position:absolute;z-index:2;display:flex;align-items:center;gap:10px;min-width:126px;padding:10px 13px;border:1px solid #ffffff22;border-radius:12px;background:#1b315de8;box-shadow:0 10px 26px #07152b45;backdrop-filter:blur(10px);animation:floatSoft 4s ease-in-out infinite}
+.home-float-card>span{width:30px;height:30px;display:grid;place-items:center;border-radius:9px;background:#ffffff12;color:#D9C17A;font-size:17px}
+.home-float-card div{display:grid;gap:1px}.home-float-card b{font:800 17px Inter,Cairo,sans-serif;color:#fff}.home-float-card small{font-size:9px;color:#B6C5E1}
+.float-top{top:10px;right:0}.float-bottom{bottom:10px;left:0;animation-delay:-2s}
+@keyframes floatSoft{50%{transform:translateY(-6px)}}
+.home-hero-watermark{position:absolute;z-index:-1;left:35%;bottom:-70px;font:900 180px Inter,sans-serif;color:#ffffff06;letter-spacing:-15px;pointer-events:none}
+.home-kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.home-kpi{position:relative;overflow:hidden;min-width:0;padding:20px 20px 17px;background:#fff;border:1px solid #E5EAF2;border-radius:17px;box-shadow:0 4px 16px #172b5407;transition:transform .22s,box-shadow .22s;animation:homeEnter .6s ease both}
+.home-kpi:before{content:"";position:absolute;inset:0 0 auto;height:4px;background:var(--kpi-accent)}
+.home-kpi:hover{transform:translateY(-4px);box-shadow:0 13px 28px #172b5415}
+.kpi-indigo{--kpi-accent:linear-gradient(90deg,#5368E8,#91A0FF)}.kpi-teal{--kpi-accent:linear-gradient(90deg,#0CA982,#65D9B7)}.kpi-amber{--kpi-accent:linear-gradient(90deg,#D99B35,#F0CF78)}.kpi-violet{--kpi-accent:linear-gradient(90deg,#8A66DC,#C2A9FA)}
+.home-kpi-heading{display:flex;align-items:center;gap:9px;color:#69758B;font-size:11px;font-weight:700}
+.home-kpi-icon{width:31px;height:31px;display:grid;place-items:center;background:#F0F3FF;color:#596CE4;border-radius:10px;font-size:17px}
+.kpi-teal .home-kpi-icon{background:#E8F8F2;color:#0CA982}.kpi-amber .home-kpi-icon{background:#FFF6E6;color:#C58B24}.kpi-violet .home-kpi-icon{background:#F3EDFF;color:#8963D5}
+.home-kpi-index{margin-inline-start:auto;font:700 9px Inter,sans-serif;color:#A8B2C2}
+.home-kpi>strong{display:block;margin:15px 0 13px;font:800 31px/1 Inter,Cairo,sans-serif;letter-spacing:-1px;color:#182746}
+.home-kpi-foot{display:flex;align-items:center;justify-content:space-between;gap:7px;padding-top:12px;border-top:1px solid #EFF2F6;color:#8792A4;font-size:10px}
+.home-kpi-foot a,.home-head-link,.home-activity-all,.home-status-links a{color:#5368D9;text-decoration:none;font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap}
+.home-kpi-foot a:hover,.home-head-link:hover,.home-activity-all:hover,.home-status-links a:hover{text-decoration:underline}
+.home-analysis-grid{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(280px,.85fr);gap:15px}
+.home-panel{min-width:0;background:#fff;border:1px solid #E5EAF2;border-radius:18px;padding:21px;box-shadow:0 4px 16px #172b5406;transition:box-shadow .2s}
+.home-panel:hover{box-shadow:0 10px 26px #172b540c}
+.home-panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.home-panel-head h3,.home-workflow-heading h3{margin:5px 0 3px;color:#182746;font-size:17px;font-weight:800}
+.home-panel-head p,.home-workflow-heading p{margin:0;color:#8994A6;font-size:10px}
+.home-section-kicker{font-size:8px;letter-spacing:1.5px;color:#8998B5}
+.home-range-switch{display:flex;gap:3px;padding:3px;border-radius:9px;background:#F3F5FA;flex-shrink:0}
+.home-range-btn{border:0;background:transparent;padding:6px 9px;border-radius:7px;color:#8893A5;font:700 10px Cairo,sans-serif;cursor:pointer;transition:all .18s}
+.home-range-btn.active{background:#fff;color:#475BD1;box-shadow:0 2px 7px #172b5414}
+.home-chart-summary{display:flex;align-items:center;justify-content:space-between;margin:17px 0 0}
+.home-chart-summary>div{display:flex;align-items:baseline;gap:8px}.home-chart-summary strong{font:800 25px Inter,Cairo,sans-serif;color:#182746}.home-chart-summary span{font-size:10px;color:#8A96A8}
+.home-chart-note{display:flex;align-items:center;gap:7px;font-size:9px!important;color:#8A96A8}
+.home-chart-note i{width:6px;height:6px;box-shadow:none}
+.home-chart-area{margin-top:2px}.home-line-svg{display:block;width:100%;height:190px;overflow:visible}
+.home-chart-labels{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:2px;margin-top:-2px;color:#9AA4B3;text-align:center;font:9px Cairo,sans-serif}
+.home-chart-footer{display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding-top:14px;margin-top:12px;border-top:1px solid #F0F2F6;color:#929CAF;font-size:10px}
+.home-chart-footer b{color:#4A5870}.home-chart-footer a{margin-inline-start:auto;color:#5368D9;text-decoration:none;font-weight:800;cursor:pointer}
+.home-mini-icon{width:32px;height:32px;display:grid;place-items:center;border-radius:10px;background:#F0F2FF;color:#6475E7;font-size:18px}
+.home-donut-wrap{display:flex;align-items:center;justify-content:center;gap:24px;padding:22px 0 18px}
+.home-donut{width:142px;height:142px;flex:0 0 142px;border-radius:50%;display:grid;place-items:center;position:relative;animation:donutReveal .8s ease both}
+.home-donut:before{content:"";position:absolute;inset:13px;border-radius:50%;background:#fff}
+@keyframes donutReveal{from{transform:scale(.85);opacity:.5}to{transform:scale(1);opacity:1}}
+.home-donut-center{position:relative;z-index:1;display:grid;justify-items:center;gap:1px}
+.home-donut-center strong{font:800 27px Inter,Cairo,sans-serif;color:#182746}.home-donut-center span{font-size:9px;color:#8994A6}
+.home-donut-legend{display:grid;gap:15px;min-width:85px}
+.home-donut-legend>div{display:grid;grid-template-columns:10px auto auto;align-items:center;gap:7px}
+.home-donut-legend i{width:8px;height:8px;border-radius:3px}.legend-published{background:#6475F4}.legend-draft{background:#13B88A}
+.home-donut-legend span{font-size:10px;color:#8793A5}.home-donut-legend b{font:800 12px Inter,Cairo,sans-serif;color:#34425B}
+.home-status-insight{padding-top:13px;border-top:1px solid #EFF2F6;display:flex;justify-content:space-between;align-items:center;color:#8C97A8;font-size:10px}
+.home-status-insight>b{color:#5368D9;font:800 13px Inter,sans-serif}
+.home-progress{height:5px;background:#EDF0F6;border-radius:8px;overflow:hidden;flex-basis:100%;order:3;margin-top:8px}
+.home-progress i{display:block;height:100%;border-radius:8px;background:linear-gradient(90deg,#6475F4,#13B88A);transition:width .7s ease}
+.home-status-insight{flex-wrap:wrap}
+.home-status-links{display:flex;justify-content:space-between;gap:12px;margin-top:14px}
+.home-lower-grid{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);gap:15px}
+.home-head-link{margin-top:7px}
+.home-list,.home-activity-list,.home-source-list{margin-top:15px}
+.home-report-item{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid #F0F2F6;min-width:0}
+.home-report-item:last-child,.home-activity-item:last-child,.home-source-item:last-child{border-bottom:0}
+.home-report-mark{width:34px;height:34px;flex:0 0 34px;display:grid;place-items:center;border-radius:10px;background:#EFF2FF;color:#5B6EE4;font-size:16px}
+.home-report-copy,.home-activity-copy,.home-source-copy{display:grid;gap:2px;min-width:0;flex:1}
+.home-report-copy b,.home-activity-copy b,.home-source-copy b{color:#34415A;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.home-report-copy small,.home-activity-copy span,.home-source-copy small{color:#929CAE;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.home-status{padding:4px 8px;border-radius:20px;font-size:9px;font-weight:800;white-space:nowrap}
+.is-published{background:#E8F8F1;color:#10966D}.is-draft{background:#FFF6E8;color:#BA8122}
+.home-open-link{border:0;background:transparent;color:#596DDE;font:700 10px Cairo,sans-serif;cursor:pointer}
+.home-open-link:hover{text-decoration:underline}
+.home-live-label{display:flex;align-items:center;gap:7px;padding:5px 9px;border:1px solid #DDF4EA;background:#F1FBF6;border-radius:20px;color:#17986F;font-size:9px;font-weight:800}
+.home-live-label i{width:6px;height:6px;box-shadow:0 0 0 3px #31d6a01c}
+.home-activity-item{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #F0F2F6;min-width:0}
+.home-activity-icon{width:31px;height:31px;flex:0 0 31px;display:grid;place-items:center;border-radius:50%;background:#EAF8F3;color:#0CA982;font-size:15px}
+.home-activity-item time{font-size:9px;color:#9AA4B3;white-space:nowrap}
+.home-activity-all{display:inline-block;margin-top:13px}
+.home-empty-inline{display:grid;justify-items:center;gap:5px;padding:21px 10px;text-align:center;color:#7E8BA0}
+.home-empty-inline>span{font-size:22px;color:#A0AAD0}.home-empty-inline b{font-size:11px;color:#56637A}.home-empty-inline small{font-size:9px;color:#97A1B0}.home-empty-inline .btn{margin-top:8px}
+.home-data-grid{grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr)}
+.home-source-item{display:flex;align-items:center;gap:10px;width:100%;padding:11px 0;border:0;border-bottom:1px solid #F0F2F6;background:transparent;text-align:right;cursor:pointer}
+.home-source-item:hover .home-source-copy b{color:#5368D9}
+.home-source-icon{width:34px;height:34px;flex:0 0 34px;display:grid;place-items:center;border-radius:10px;background:#F0F3FF;color:#5B6DE0;font-size:17px}
+.home-source-count{display:grid;justify-items:center;min-width:34px}.home-source-count b{font:800 12px Inter,Cairo,sans-serif;color:#46536B}.home-source-count small{font-size:8px;color:#A0A9B7}
+.home-source-arrow{color:#9CA7B7;font-size:13px}
+.home-source-breakdown{display:grid;gap:16px;margin:25px 0 21px}
+.home-source-bar-row{display:grid;grid-template-columns:105px minmax(30px,1fr) 20px;align-items:center;gap:9px}
+.home-source-bar-row>span{font-size:9px;color:#768399}.home-source-bar-row>b{font:800 10px Inter,sans-serif;color:#495770;text-align:left}
+.home-source-track{height:7px;background:#F0F2F7;border-radius:10px;overflow:hidden}.home-source-track i{display:block;height:100%;border-radius:10px;transition:width .7s ease}
+.home-data-foot{display:flex;justify-content:space-between;padding-top:10px;margin-top:8px;border-top:1px solid #F0F2F6;color:#8994A6;font-size:10px}
+.home-data-foot b{color:#43516A;font:800 12px Inter,sans-serif}
+.home-workflow{padding:23px 24px 24px;border:1px solid #E5EAF2;border-radius:18px;background:linear-gradient(135deg,#fff,#F9FAFE)}
+.home-workflow-heading{text-align:center}.home-workflow-heading h3{margin-top:6px}
+.home-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;margin-top:21px}
+.home-step{position:relative;display:grid;justify-items:start;gap:6px;min-height:142px;padding:16px;border:1px solid #E8ECF4;border-radius:14px;background:#fff;text-align:right;cursor:pointer;transition:all .22s}
+.home-step:hover{transform:translateY(-4px);border-color:#BCC8F2;box-shadow:0 10px 22px #24365b12}
+.home-step-no{position:absolute;top:13px;left:14px;color:#B6BFCE;font:800 10px Inter,sans-serif}
+.home-step-icon{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:#EEF1FF;color:#5D70E4;font-size:17px}
+.home-step b{margin-top:4px;font-size:11px;color:#39475F}.home-step small{color:#929CAE;font-size:9px}.home-step>i{position:absolute;bottom:13px;left:15px;color:#9DA9BC;font-style:normal}
+.home-bottom-actions{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;padding:18px 20px;border:1px solid #E3E8F1;border-radius:16px;background:#fff}
+.home-bottom-actions>div{display:flex;align-items:center;gap:12px}.home-bottom-symbol{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:#FFF7E8;color:#C39339;font-size:20px}
+.home-bottom-actions>div div{display:grid;gap:2px}.home-bottom-actions b{color:#34415A;font-size:12px}.home-bottom-actions small{color:#8D98AA;font-size:9px}
+.home-bottom-buttons{display:flex;gap:7px;flex-wrap:wrap}.home-bottom-buttons .btn{min-height:38px;padding:0 12px;font-size:10px}.home-import-label{cursor:pointer}
+.home-disclaimer{display:flex;align-items:flex-start;gap:8px;padding:11px 13px;border:1px solid #DCE7F6;border-radius:11px;background:#F0F5FC;color:#72839D;font-size:9px;line-height:1.8}
+.home-disclaimer span{color:#5368D9;font-size:13px}
+@media(max-width:1100px){.home-hero{padding:28px}.home-kpi{padding:17px 14px}.home-kpi-foot{font-size:9px}.home-analysis-grid{grid-template-columns:minmax(0,1.4fr) minmax(260px,.8fr)}}
+@media(max-width:850px){.home-hero{grid-template-columns:1fr minmax(200px,.65fr);padding:24px}.home-hero-visual{transform:scale(.88)}.home-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.home-analysis-grid,.home-lower-grid{grid-template-columns:1fr}.home-steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.home-dashboard{gap:12px}.home-hero{grid-template-columns:1fr;padding:23px 19px 17px;border-radius:18px;min-height:unset}.home-hero h2{font-size:27px}.home-hero-copy>p{font-size:12px}.home-hero-meta{gap:10px;font-size:9px}.home-hero-visual{min-height:178px;transform:scale(.82);margin:-3px 0 -10px}.home-hero-core{width:115px;height:115px}.orbit-one{width:165px;height:165px}.orbit-two{width:210px;height:110px}.orbit-three{width:220px;height:220px}.home-float-card{min-width:112px;padding:8px 10px}.home-kpi-grid{gap:9px}.home-kpi{padding:15px 12px 12px;border-radius:13px}.home-kpi-heading{font-size:9px;gap:6px}.home-kpi-icon{width:27px;height:27px}.home-kpi>strong{font-size:26px;margin:12px 0}.home-kpi-foot{font-size:8px;gap:3px;padding-top:9px}.home-kpi-foot a{font-size:8px}.home-panel{padding:15px;border-radius:15px}.home-panel-head h3{font-size:15px}.home-panel-head p{font-size:9px}.home-range-btn{padding:6px 7px;font-size:9px}.home-chart-summary strong{font-size:21px}.home-line-svg{height:158px}.home-chart-labels{font-size:8px}.home-chart-footer{gap:10px;font-size:9px}.home-donut-wrap{gap:17px;padding:18px 0 14px}.home-donut{width:125px;height:125px;flex-basis:125px}.home-donut-center strong{font-size:23px}.home-report-item{gap:7px}.home-report-copy b{max-width:120px;font-size:9px}.home-status{font-size:8px;padding:4px 6px}.home-open-link{font-size:9px;padding:3px}.home-activity-copy b{font-size:10px}.home-activity-copy span{font-size:8px}.home-activity-item time{font-size:8px}.home-source-bar-row{grid-template-columns:85px minmax(30px,1fr) 18px;gap:7px}.home-workflow{padding:19px 14px}.home-workflow-heading h3{font-size:14px}.home-steps{gap:8px}.home-step{min-height:128px;padding:12px}.home-step b{font-size:10px}.home-step small{font-size:8px}.home-bottom-actions{padding:14px;gap:12px}.home-bottom-buttons{width:100%}.home-bottom-buttons .btn{flex:1 1 calc(50% - 7px)}.home-disclaimer{font-size:8px}}
+@media(max-width:360px){.home-kpi-heading{font-size:8px}.home-kpi-index{display:none}.home-range-btn{padding:6px 5px}.home-hero-actions{gap:7px}.home-primary-action,.home-secondary-action{padding:0 11px;font-size:11px}.home-report-copy b{max-width:88px}.home-status{font-size:7px}.home-open-link{font-size:8px}}
+@media(prefers-reduced-motion:reduce){.home-dashboard,.home-kpi,.home-orbit,.home-float-card,.home-donut{animation:none!important}.home-kpi,.home-step,.home-primary-action,.home-secondary-action{transition:none!important}}
+
 </style></head>
 <body><div class="app nds-report-layout">
 <aside class="side nds-report-sidebar" aria-label="القائمة الجانبية">
@@ -88,7 +230,7 @@ const accessDefs=[
 ['stock','الوصول إلى الأصناف والمخزون'],['partners','الوصول إلى العملاء والموردين'],
 ['financial','إظهار الحقول المالية'],['export','السماح بتصدير البيانات']
 ];
-let db=load(),page='home',draft=null,lastRows=[],selectedDatasetId=null;
+let db=load(),page='home',draft=null,lastRows=[],selectedDatasetId=null,homeRange=7;
 function freshDb(){return {reports:[],datasets:starter.map(x=>({...x,rows:x.rows.map(r=>({...r}))})),runLog:[],versions:[],schedules:[],settings:{permissions:{},accessRules:{}}}}
 function normalize(data){
  const x=data&&Array.isArray(data.reports)&&Array.isArray(data.datasets)?data:freshDb();
@@ -147,11 +289,50 @@ function reportList(title,sub,items){
  return head(title,sub)+'<div class="card pad"><div class="row"><div class="field"><label>بحث في التقارير</label><input id="report-search" placeholder="اسم التقرير أو مصدر البيانات"></div><button class="btn primary" data-act="new">＋ تقرير جديد</button></div></div><div class="card table-wrap"><table><thead><tr><th>اسم التقرير</th><th>مصدر البيانات</th><th>الأعمدة</th><th>الحالة</th><th>آخر تعديل</th><th>إجراءات</th></tr></thead><tbody id="report-rows">'+reportRows(items)+'</tbody></table></div>';
 }
 function home(){
- return head('نظرة عامة','مساحة العمل المحلية — جميع الوظائف تعمل داخل هذا المتصفح')+
- '<div class="grid"><div class="card stat">التقارير المحفوظة<b>'+db.reports.length+'</b></div><div class="card stat">مصادر البيانات<b>'+db.datasets.length+'</b></div><div class="card stat">عمليات التشغيل<b>'+db.runLog.length+'</b></div><div class="card stat">المفضلة<b>'+db.reports.filter(x=>x.favorite).length+'</b></div></div>'+
- '<div class="card pad"><h2>ابدأ دورة التقرير</h2><div class="row"><button class="btn primary" data-act="new">إنشاء تقرير</button><button class="btn" data-page="templates">اختيار قالب</button><button class="btn" data-page="datasets">إدارة مصادر البيانات</button><button class="btn" data-page="library">مكتبة التقارير</button></div><p class="muted" style="margin-top:15px">أدخل البيانات أو استورد CSV/JSON، ثم صمّم التقرير وشغّله واحفظه وانشره وشاركه محليًا.</p></div>'+
- '<div class="card pad"><h2>اختصارات التنقل</h2><div class="grid"><button class="btn" data-page="published">التقارير المنشورة</button><button class="btn" data-page="drafts">المسودات</button><button class="btn" data-page="runlog">سجل التشغيل</button><button class="btn" data-page="permissions">الصلاحيات</button><button class="btn" data-page="versions">إصدارات التقارير</button><button class="btn" data-page="schedules">جدولة التقارير</button></div></div>'+
- '<div class="card pad"><h2>نسخ احتياطي واستعادة</h2><div class="row"><button class="btn" data-act="backup">تصدير مساحة العمل JSON</button><label class="btn">استيراد نسخة JSON<input id="restore-file" type="file" accept=".json,application/json" hidden></label></div></div>';
+ const now=new Date(),range=homeRange||7,rangeMs=range*86400000,start=new Date(now.getTime()-rangeMs);
+ const totalRows=db.datasets.reduce((n,d)=>n+(Array.isArray(d.rows)?d.rows.length:0),0);
+ const published=db.reports.filter(r=>r.status==='published').length;
+ const draftsCount=db.reports.length-published;
+ const favorites=db.reports.filter(r=>r.favorite).length;
+ const logs=db.runLog.filter(x=>{const t=Date.parse(x.at);return Number.isFinite(t)&&t>=start.getTime()&&t<=now.getTime()});
+ const buckets=Array.from({length:7},(_,i)=>({count:0,label:new Date(start.getTime()+i*rangeMs/7).toLocaleDateString('ar-EG',{day:'2-digit',month:'short'})}));
+ logs.forEach(x=>{const t=Date.parse(x.at);if(Number.isFinite(t)){const i=Math.max(0,Math.min(6,Math.floor((t-start.getTime())/(rangeMs/7))));buckets[i].count++;}});
+ const maxCount=Math.max(1,...buckets.map(x=>x.count));
+ const points=buckets.map((x,i)=>({x:30+i*98,y:176-(x.count/maxCount)*132}));
+ const linePath=points.map((p,i)=>(i?'L':'M')+p.x+' '+p.y).join(' ');
+ const areaPath='M'+points[0].x+' 190 '+points.map(p=>'L'+p.x+' '+p.y).join(' ')+' L'+points[6].x+' 190 Z';
+ const chartSvg='<svg class="home-line-svg" viewBox="0 0 650 210" role="img" aria-label="منحنى عدد عمليات تشغيل التقارير خلال الفترة المحددة"><defs><linearGradient id="homeArea" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#6475F4" stop-opacity=".26"/><stop offset="100%" stop-color="#6475F4" stop-opacity="0"/></linearGradient></defs><path d="M20 44H640 M20 88H640 M20 132H640 M20 176H640" stroke="#E9EDF5" stroke-width="1" stroke-dasharray="4 6" fill="none"/><path d="'+areaPath+'" fill="url(#homeArea)"/><path d="'+linePath+'" fill="none" stroke="#6475F4" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>'+points.map(p=>'<circle cx="'+p.x+'" cy="'+p.y+'" r="4.5" fill="#fff" stroke="#6475F4" stroke-width="3"/>').join('')+'</svg>';
+ const publishedPct=db.reports.length?Math.round(published/db.reports.length*100):0;
+ const donutStyle=db.reports.length?'background:conic-gradient(#6475F4 0 '+publishedPct+'%,#13B88A '+publishedPct+'% 100%)':'background:conic-gradient(#E8EDF5 0 100%)';
+ const recentLogs=db.runLog.slice(0,4);
+ const activityHtml=recentLogs.length?recentLogs.map(x=>'<div class="home-activity-item"><span class="home-activity-icon">↗</span><div class="home-activity-copy"><b>'+esc(x.reportName||'تقرير غير مسمى')+'</b><span>تشغيل '+esc(x.datasetName||'مصدر محلي')+' · '+Number(x.rowCount||0)+' نتيجة</span></div><time>'+esc(new Date(x.at).toLocaleDateString('ar-EG',{day:'numeric',month:'short'}))+'</time></div>').join(''):'<div class="home-empty-inline"><span>◷</span><b>لا توجد عمليات تشغيل بعد</b><small>عند تشغيل أول تقرير سيظهر سجل النشاط هنا.</small></div>';
+ const recentReports=db.reports.slice().sort((a,b)=>Date.parse(b.updated||0)-Date.parse(a.updated||0)).slice(0,4);
+ const reportsHtml=recentReports.length?recentReports.map(r=>'<div class="home-report-item"><span class="home-report-mark">▤</span><div class="home-report-copy"><b>'+esc(r.name)+'</b><small>'+esc(r.datasetName||'مصدر بيانات')+'</small></div><span class="home-status '+(r.status==='published'?'is-published':'is-draft')+'">'+(r.status==='published'?'منشور':'مسودة')+'</span><button class="home-open-link" data-act="edit" data-id="'+esc(r.id)+'">فتح</button></div>').join(''):'<div class="home-empty-inline"><span>▤</span><b>مساحة التقارير جاهزة للبدء</b><small>أنشئ تقريرك الأول وسيظهر هنا مع حالته وآخر تعديل.</small><button class="btn primary" data-act="new">إنشاء أول تقرير</button></div>';
+ const sourceList=db.datasets.slice(0,4);
+ const sourceHtml=sourceList.map(d=>'<button class="home-source-item" data-page="'+(['sales','purchases','stock','partners'].includes(d.sourceType)?'source-'+d.sourceType:'datasets')+'"><span class="home-source-icon">'+(d.sourceType==='sales'?'↗':d.sourceType==='purchases'?'↙':d.sourceType==='stock'?'◫':'◇')+'</span><span class="home-source-copy"><b>'+esc(d.name)+'</b><small>'+esc(sourceNames[d.sourceType]||'مصدر مخصص')+'</small></span><span class="home-source-count"><b>'+d.rows.length+'</b><small>سجل</small></span><span class="home-source-arrow">←</span></button>').join('');
+ const sourceColors=['#6475F4','#13B88A','#E6A83B','#A78BFA'];
+ const sourceTypes=['sales','purchases','stock','partners'];
+ const sourceBreakdown=sourceTypes.map((t,i)=>{const count=db.datasets.filter(d=>d.sourceType===t).length;return '<div class="home-source-bar-row"><span>'+esc(sourceNames[t])+'</span><div class="home-source-track"><i style="width:'+(db.datasets.length?Math.max(count?8:0,count/db.datasets.length*100):0)+'%;background:'+sourceColors[i]+'"></i></div><b>'+count+'</b></div>';}).join('');
+ const rangeBtns=[7,30,90].map(n=>'<button class="home-range-btn '+(range===n?'active':'')+'" data-home-range="'+n+'" aria-pressed="'+(range===n?'true':'false')+'">'+n+' يوم</button>').join('');
+ return head('نظرة عامة','مركز قيادة التقارير والتحليلات — مساحة عمل محلية مستقلة')+
+ '<div class="home-dashboard">'+
+ '<section class="home-hero"><div class="home-hero-glow"></div><div class="home-hero-copy"><span class="home-eyebrow"><i></i> NDS REPORT INTELLIGENCE</span><h2>من البيانات إلى <em>قرار أوضح.</em></h2><p>أنشئ تقاريرك، حلّل نتائجك، وتابع دورة العمل كاملة من مساحة واحدة — دون خادم أو قاعدة بيانات خارجية.</p><div class="home-hero-actions"><button class="home-primary-action" data-act="new"><span>＋</span> إنشاء تقرير جديد</button><button class="home-secondary-action" data-page="templates">استكشف القوالب <span>←</span></button></div><div class="home-hero-meta"><span><i class="home-meta-dot"></i> مساحة محلية نشطة</span><span>آخر تحديث: '+esc(now.toLocaleDateString('ar-EG',{day:'numeric',month:'long',year:'numeric'}))+'</span></div></div><div class="home-hero-visual"><div class="home-orbit orbit-one"></div><div class="home-orbit orbit-two"></div><div class="home-orbit orbit-three"></div><div class="home-hero-core"><span class="home-core-symbol">NDS</span><b>REPORT<br>STUDIO</b><small>INSIGHT ENGINE</small></div><div class="home-float-card float-top"><span>◈</span><div><b>'+db.reports.length+'</b><small>تقارير محفوظة</small></div></div><div class="home-float-card float-bottom"><span>↗</span><div><b>'+logs.length+'</b><small>تشغيل خلال '+range+' أيام</small></div></div></div><div class="home-hero-watermark">NDS</div></section>'+
+ '<section class="home-kpi-grid">'+
+ '<article class="home-kpi kpi-indigo"><div class="home-kpi-heading"><span class="home-kpi-icon">▤</span><span>إجمالي التقارير</span><span class="home-kpi-index">01</span></div><strong>'+db.reports.length+'</strong><div class="home-kpi-foot"><span>تقارير محفوظة داخل مساحة العمل</span><a data-page="library">عرض الكل ←</a></div></article>'+
+ '<article class="home-kpi kpi-teal"><div class="home-kpi-heading"><span class="home-kpi-icon">↗</span><span>عمليات التشغيل</span><span class="home-kpi-index">02</span></div><strong>'+db.runLog.length+'</strong><div class="home-kpi-foot"><span>'+logs.length+' عملية خلال '+range+' أيام</span><a data-page="runlog">سجل التشغيل ←</a></div></article>'+
+ '<article class="home-kpi kpi-amber"><div class="home-kpi-heading"><span class="home-kpi-icon">◫</span><span>سجلات البيانات</span><span class="home-kpi-index">03</span></div><strong>'+totalRows.toLocaleString('en-US')+'</strong><div class="home-kpi-foot"><span>'+db.datasets.length+' مصادر بيانات متاحة</span><a data-page="datasets">إدارة المصادر ←</a></div></article>'+
+ '<article class="home-kpi kpi-violet"><div class="home-kpi-heading"><span class="home-kpi-icon">☆</span><span>التقارير المفضلة</span><span class="home-kpi-index">04</span></div><strong>'+favorites+'</strong><div class="home-kpi-foot"><span>'+published+' منشور · '+draftsCount+' مسودة</span><a data-page="favorites">عرض المفضلة ←</a></div></article>'+
+ '</section>'+
+ '<section class="home-analysis-grid"><article class="home-panel home-trend-panel"><div class="home-panel-head"><div><span class="home-section-kicker">ACTIVITY ANALYTICS</span><h3>نشاط تشغيل التقارير</h3><p>تحليل عمليات التشغيل المسجلة فعلياً في مساحة العمل</p></div><div class="home-range-switch" role="group" aria-label="الفترة الزمنية">'+rangeBtns+'</div></div><div class="home-chart-summary"><div><strong>'+logs.length+'</strong><span>عملية خلال الفترة</span></div><span class="home-chart-note"><i></i> بيانات تشغيل محلية</span></div><div class="home-chart-area">'+chartSvg+'<div class="home-chart-labels">'+buckets.map(x=>'<span>'+esc(x.label)+'</span>').join('')+'</div></div><div class="home-chart-footer"><span>أقل نشاط: <b>'+Math.min(...buckets.map(x=>x.count))+'</b></span><span>أعلى نشاط: <b>'+Math.max(...buckets.map(x=>x.count))+'</b></span><a data-page="runlog">تفاصيل السجل ←</a></div></article>'+
+ '<article class="home-panel home-status-panel"><div class="home-panel-head"><div><span class="home-section-kicker">REPORT PORTFOLIO</span><h3>توزيع التقارير</h3><p>حالة التقارير المحفوظة</p></div><span class="home-mini-icon">◉</span></div><div class="home-donut-wrap"><div class="home-donut" style="'+donutStyle+'"><div class="home-donut-center"><strong>'+db.reports.length+'</strong><span>إجمالي</span></div></div><div class="home-donut-legend"><div><i class="legend-published"></i><span>منشورة</span><b>'+published+'</b></div><div><i class="legend-draft"></i><span>مسودات</span><b>'+draftsCount+'</b></div></div></div><div class="home-status-insight"><span>نسبة النشر</span><b>'+publishedPct+'%</b><div class="home-progress"><i style="width:'+publishedPct+'%"></i></div></div><div class="home-status-links"><a data-page="published">التقارير المنشورة</a><a data-page="drafts">المسودات</a></div></article></section>'+
+ '<section class="home-lower-grid"><article class="home-panel home-recent-panel"><div class="home-panel-head"><div><span class="home-section-kicker">RECENT WORK</span><h3>أحدث التقارير</h3><p>آخر التقارير التي تم حفظها في مساحة العمل</p></div><a class="home-head-link" data-page="library">مكتبة التقارير ←</a></div><div class="home-list">'+reportsHtml+'</div></article>'+
+ '<article class="home-panel home-activity-panel"><div class="home-panel-head"><div><span class="home-section-kicker">LIVE ACTIVITY</span><h3>آخر النشاطات</h3><p>أحدث عمليات التشغيل الفعلية</p></div><span class="home-live-label"><i></i> محلي</span></div><div class="home-activity-list">'+activityHtml+'</div><a class="home-activity-all" data-page="runlog">عرض سجل التشغيل بالكامل ←</a></article></section>'+
+ '<section class="home-lower-grid home-data-grid"><article class="home-panel"><div class="home-panel-head"><div><span class="home-section-kicker">DATA FOUNDATION</span><h3>مصادر البيانات</h3><p>المجموعات المتاحة وعدد السجلات في كل مصدر</p></div><a class="home-head-link" data-page="datasets">إدارة البيانات ←</a></div><div class="home-source-list">'+(sourceHtml||'<div class="home-empty-inline"><b>لا توجد مصادر بيانات</b><small>أنشئ مصدراً جديداً أو استورد CSV / JSON.</small></div>')+'</div></article>'+
+ '<article class="home-panel home-breakdown-panel"><div class="home-panel-head"><div><span class="home-section-kicker">SOURCE MIX</span><h3>توزيع المصادر</h3><p>عدد مجموعات البيانات حسب النوع</p></div><span class="home-mini-icon">◫</span></div><div class="home-source-breakdown">'+sourceBreakdown+'</div><div class="home-data-foot"><span>إجمالي المجموعات</span><b>'+db.datasets.length+'</b></div><div class="home-data-foot"><span>إجمالي السجلات</span><b>'+totalRows.toLocaleString('en-US')+'</b></div></article></section>'+
+ '<section class="home-workflow"><div class="home-workflow-heading"><span class="home-section-kicker">YOUR REPORT WORKFLOW</span><h3>رحلة التقرير — من المصدر إلى المخرجات</h3><p>مسار عمل واضح داخل المتصفح، مع بقاء بياناتك تحت سيطرتك.</p></div><div class="home-steps"><button class="home-step" data-page="datasets"><span class="home-step-no">01</span><span class="home-step-icon">◫</span><b>مصادر البيانات</b><small>أضف بياناتك أو استوردها</small><i>←</i></button><button class="home-step" data-page="builder"><span class="home-step-no">02</span><span class="home-step-icon">✧</span><b>تصميم التقرير</b><small>اختر الأعمدة والفلاتر</small><i>←</i></button><button class="home-step" data-page="runlog"><span class="home-step-no">03</span><span class="home-step-icon">▷</span><b>التشغيل والتحليل</b><small>نفّذ وشاهد النتائج</small><i>←</i></button><button class="home-step" data-page="library"><span class="home-step-no">04</span><span class="home-step-icon">▣</span><b>الحفظ والإدارة</b><small>احفظ وراجع إصداراتك</small><i>←</i></button></div></section>'+
+ '<section class="home-bottom-actions"><div><span class="home-bottom-symbol">✦</span><div><b>جاهز لإنشاء تقريرك التالي؟</b><small>ابدأ من تقرير فارغ أو انطلق من أحد القوالب الجاهزة.</small></div></div><div class="home-bottom-buttons"><button class="btn primary" data-act="new">＋ تقرير جديد</button><button class="btn" data-page="templates">عرض القوالب</button><button class="btn" data-act="backup">نسخة احتياطية JSON</button><label class="btn home-import-label">استعادة نسخة<input id="restore-file" type="file" accept=".json,application/json" hidden></label></div></section>'+
+ '<div class="home-disclaimer"><span>◈</span> تعمل هذه المساحة محلياً داخل المتصفح. لا يوجد اتصال بخادم ERPNext أو قاعدة بيانات خارجية، وإعدادات المشاركة والجدولة محفوظة محلياً ولا تنفّذ إرسالاً أو تشغيلًا تلقائياً في الخلفية.</div>'+
+ '</div>';
 }
 function library(){return reportList('مكتبة التقارير','جميع التقارير المحفوظة محليًا مع أدوات الفتح والتشغيل والنشر والمشاركة',db.reports)}
 function filteredReports(kind){
@@ -326,6 +507,8 @@ function saveSettings(kind){
  if(persist())alert('تم حفظ الإعدادات محليًا في هذا المتصفح.');
 }
 document.addEventListener('click',e=>{
+ const rangeButton=e.target.closest('[data-home-range]');
+ if(rangeButton){homeRange=Number(rangeButton.dataset.homeRange)||7;render();return;}
  const nav=e.target.closest('[data-page]');
  if(nav){e.preventDefault();const p=nav.dataset.page;if(p==='builder'&&!draft)newDraft();else go(p);return;}
  const b=e.target.closest('[data-act]');if(!b)return;
