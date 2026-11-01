@@ -19,7 +19,8 @@
     'source-sales','source-purchases','source-stock','source-partners',
     'access','versions','schedules'
   ];
-  var requested=(window.location.hash||'').replace(/^#\\/?/,'');
+  var requested=(window.location.hash||'').slice(1);
+  if(requested.charAt(0)==='/')requested=requested.slice(1);
   var page=routes[requested]||requested;
   if(!allowed.includes(page))page='home';
   window.location.replace(new URL('./nds-report-studio.html#'+page,window.location.href).href);
