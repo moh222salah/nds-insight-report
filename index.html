@@ -164,16 +164,16 @@ body{margin:0}
 function ndsReportUIActions(){
 const root=document.querySelector('.nds-report-layout');if(!root)return;
 const links=[...root.querySelectorAll('aside a.si')];
-const routes=['#/overview','#/library','#/designer','#/permissions','#/templates','#/runlog','#/published','#/drafts','#/shared','#/favorites','#/source-sales','#/source-purchases','#/source-stock','#/source-partners','#/access','#/versions','#/schedules'];
+const routes=['./nds-report-studio.html#home','./nds-report-studio.html#library','./nds-report-studio.html#builder','./nds-report-studio.html#permissions','./nds-report-studio.html#templates','./nds-report-studio.html#runlog','./nds-report-studio.html#published','./nds-report-studio.html#drafts','./nds-report-studio.html#shared','./nds-report-studio.html#favorites','./nds-report-studio.html#source-sales','./nds-report-studio.html#source-purchases','./nds-report-studio.html#source-stock','./nds-report-studio.html#source-partners','./nds-report-studio.html#access','./nds-report-studio.html#versions','./nds-report-studio.html#schedules'];
 links.forEach((a,i)=>{a.href=routes[i]||'#';});
 const newReport=root.querySelector('a.btn-p[href="./nds-report-studio.html"]');
-if(newReport)newReport.addEventListener('click',e=>{e.preventDefault();location.href=new URL('./nds-report-studio.html',location.href).href;});
+if(newReport)newReport.addEventListener('click',e=>{e.preventDefault();location.href=new URL('./nds-report-studio.html#builder',location.href).href;});
 const boxes=[...root.querySelectorAll('input[type=checkbox]')];
 const all=[...root.querySelectorAll('button')].find(b=>b.textContent.trim()==='تحديد/إلغاء الكل');
 if(all)all.addEventListener('click',()=>{const checked=!boxes.every(x=>x.checked);boxes.forEach(x=>x.checked=checked);});
 const save=[...root.querySelectorAll('button')].find(b=>b.textContent.trim()==='حفظ الصلاحيات');
 if(save)save.addEventListener('click',()=>alert('تم تغيير حالة الاختيارات بالواجهة فقط. يلزم ربط ERPNext لحفظ الصلاحيات فعليًا.'));
-root.querySelectorAll('button').forEach(b=>{const t=b.textContent.trim();if(t==='تشغيل')b.addEventListener('click',()=>alert('تشغيل التقرير يتطلب اتصالًا ببيانات ERPNext.'));if(t==='فتح في المصمم')b.addEventListener('click',()=>location.href='./nds-report-studio.html');});
+root.querySelectorAll('button').forEach(b=>{const t=b.textContent.trim();if(t==='تشغيل')b.addEventListener('click',()=>alert('تشغيل التقرير يتطلب اتصالًا ببيانات ERPNext.'));if(t==='فتح في المصمم')b.addEventListener('click',()=>location.href='./nds-report-studio.html#builder');});
 }
 document.addEventListener('DOMContentLoaded',ndsReportUIActions);
 </script>
