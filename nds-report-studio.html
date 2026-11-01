@@ -239,8 +239,8 @@ function render(){
  permissions:()=>settingsView('permissions'),access:()=>settingsView('access'),
  published:()=>collectionPage('published'),drafts:()=>collectionPage('drafts'),
  shared:()=>collectionPage('shared'),favorites:()=>collectionPage('favorites'),
- source-sales:()=>datasets('sales'),source-purchases:()=>datasets('purchases'),
- source-stock:()=>datasets('stock'),source-partners:()=>datasets('partners'),
+ 'source-sales':()=>datasets('sales'),'source-purchases':()=>datasets('purchases'),
+ 'source-stock':()=>datasets('stock'),'source-partners':()=>datasets('partners'),
  datasets:()=>datasets('all'), 'dataset-detail':datasetDetail,versions:versions,schedules:schedules
  };
  $('#view').innerHTML=(views[page]||home)();
@@ -251,18 +251,23 @@ function openReport(id,execute){
  const r=db.reports.find(x=>x.id===id);if(!r)return;
  draft={...r,columns:r.columns.slice(),sharedWith:(r.sharedWith||[]).slice()};
  lastRows=[];go('builder');
- if(execute)setTimeout(run,0);
+ if(execute)setTimeout(()=>run(true),0);
 }
-function run(){
+function syncDraftFromForm(){
  if(!draft)return;
- draft.name=$('#draft-name')?$('#draft-name').value:draft.name;
- draft.columns=[...document.querySelectorAll('[data-col]:checked')].map(x=>x.dataset.col);
- draft.filterCol=$('#filter-col')?$('#filter-col').value:'';
- draft.filterOp=$('#filter-op')?$('#filter-op').value:'contains';
- draft.filterValue=$('#filter-value')?$('#filter-value').value:'';
- draft.sortCol=$('#sort-col')?$('#sort-col').value:'';
- draft.sortDir=$('#sort-dir')?$('#sort-dir').value:'asc';
- draft.status=$('#draft-status')?$('#draft-status').value:(draft.status||'draft');
+ if($('#draft-name'))draft.name=$('#draft-name').value;
+ if($('#draft-dataset'))draft.datasetId=$('#draft-dataset').value;
+ if(document.querySelector('[data-col]'))draft.columns=[...document.querySelectorAll('[data-col]:checked')].map(x=>x.dataset.col);
+ if($('#filter-col'))draft.filterCol=$('#filter-col').value;
+ if($('#filter-op'))draft.filterOp=$('#filter-op').value;
+ if($('#filter-value'))draft.filterValue=$('#filter-value').value;
+ if($('#sort-col'))draft.sortCol=$('#sort-col').value;
+ if($('#sort-dir'))draft.sortDir=$('#sort-dir').value;
+ if($('#draft-status'))draft.status=$('#draft-status').value;
+}
+function run(recordRun){
+ if(!draft)return;
+ syncDraftFromForm();
  if(!draft.columns.length){alert('اختر عمودًا واحدًا على الأقل');return}
  const d=db.datasets.find(x=>x.id===draft.datasetId);if(!d){alert('مصدر البيانات غير موجود');return}
  lastRows=d.rows.filter(row=>{
@@ -271,10 +276,15 @@ function run(){
   return draft.filterOp==='equals'?v===draft.filterValue:draft.filterOp==='not'?v!==draft.filterValue:v.toLowerCase().includes(draft.filterValue.toLowerCase());
  });
  if(draft.sortCol)lastRows.sort((a,b)=>String(a[draft.sortCol]??'').localeCompare(String(b[draft.sortCol]??''),'ar',{numeric:true})*(draft.sortDir==='desc'?-1:1));
- db.runLog.unshift({id:uid(),reportId:draft.id||null,reportName:draft.name||'تقرير غير محفوظ',datasetName:d.name,rowCount:lastRows.length,at:new Date().toISOString(),outcome:'نجاح'});
- db.runLog=db.runLog.slice(0,500);persist();render();
+ if(recordRun!==false){
+  db.runLog.unshift({id:uid(),reportId:draft.id||null,reportName:draft.name||'تقرير غير محفوظ',datasetName:d.name,rowCount:lastRows.length,at:new Date().toISOString(),outcome:'نجاح'});
+  db.runLog=db.runLog.slice(0,500);persist();
+ }
+ render();
 }
 function save(){
+ if(!draft)return;
+ syncDraftFromForm();
  if(!draft.name.trim()){alert('أدخل اسم التقرير');return}
  if(!draft.columns.length){alert('اختر الأعمدة');return}
  const d=db.datasets.find(x=>x.id===draft.datasetId);if(!d){alert('اختر مصدر بيانات صالحًا');return}
@@ -324,8 +334,8 @@ document.addEventListener('click',e=>{
  if(a==='library')go('library');
  if(a==='datasets')go('datasets');
  if(a==='back')go('datasets');
- if(a==='preview')run();
- if(a==='run')run();
+ if(a==='preview')run(false);
+ if(a==='run')run(true);
  if(a==='save')save();
  if(a==='delete-report'){
   if(confirm('حذف التقرير نهائيًا من مساحة هذا المتصفح؟')){db.reports=db.reports.filter(x=>x.id!==id);db.versions=db.versions.filter(x=>x.reportId!==id);persist();render();}
@@ -359,8 +369,12 @@ document.addEventListener('click',e=>{
  if(a==='view-dataset'||a==='add-row'){selectedDatasetId=id;go('dataset-detail');}
  if(a==='add-dataset-row'){
   const d=db.datasets.find(x=>x.id===id);if(!d)return;
-  if(!d.columns.length){const raw=$('#new-columns')?.value||'';d.columns=raw.split(',').map(x=>x.trim()).filter(Boolean);}
-  if(!d.columns.length){alert('أدخل أسماء الأعمدة أولًا');return;}
+  if(!d.columns.length){
+   const raw=$('#new-columns')?.value||'';d.columns=raw.split(',').map(x=>x.trim()).filter(Boolean);
+   if(!d.columns.length){alert('أدخل أسماء الأعمدة أولًا');return;}
+   if(persist())render();
+   return;
+  }
   const row={};d.columns.forEach(c=>{const input=[...document.querySelectorAll('[data-row-field]')].find(x=>x.dataset.rowField===c);row[c]=input?input.value:'';});
   d.rows.push(row);if(persist()){alert('تم حفظ السجل في مجموعة البيانات المحلية.');render();}
  }
