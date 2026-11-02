@@ -177,6 +177,21 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 @media(max-width:360px){.home-kpi-heading{font-size:8px}.home-kpi-index{display:none}.home-range-btn{padding:6px 5px}.home-hero-actions{gap:7px}.home-primary-action,.home-secondary-action{padding:0 11px;font-size:11px}.home-report-copy b{max-width:88px}.home-status{font-size:7px}.home-open-link{font-size:8px}}
 @media(prefers-reduced-motion:reduce){.home-dashboard,.home-kpi,.home-orbit,.home-float-card,.home-donut{animation:none!important}.home-kpi,.home-step,.home-primary-action,.home-secondary-action{transition:none!important}}
 
+.rv-hero{background:linear-gradient(135deg,#0F172A,#1E3A8A);color:#fff;border-radius:16px;padding:22px 24px;margin-bottom:16px;display:flex;gap:16px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap}.rv-hero>div:first-child{flex:1;min-width:240px}.rv-hero h2{color:#fff;font-size:24px;margin:10px 0 6px}.rv-hero p{margin:0;color:#CBD5E1;font-size:13px}
+.rv-tags{display:flex;gap:6px;flex-wrap:wrap}.rv-tag{background:#ffffff1f;border:1px solid #ffffff33;color:#fff;border-radius:30px;padding:3px 11px;font-size:11px;font-weight:700}.rv-tag.ok{background:#10B98133;border-color:#10B98199}
+.rv-actions{display:flex;gap:8px;flex-wrap:wrap}.rv-hero .btn{background:#ffffff14;color:#fff;border-color:#ffffff40;min-height:38px;font-size:12px}.rv-hero .btn:hover{background:#ffffff26}.rv-hero .btn.primary{background:var(--blue);border-color:var(--blue)}.rv-hero .btn.primary:hover{background:#1D4ED8}
+.rv-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}.rv-kpi{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;border-inline-start:4px solid var(--blue)}.rv-kpi small{display:block;color:var(--muted);font-size:11px;font-weight:700}.rv-kpi b{display:block;font-size:22px;color:var(--navy);margin-top:4px}
+.rv-sec-h{display:flex;gap:12px;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--line)}.rv-sec-h h2{margin:0 0 2px}.rv-sec-h p{margin:0}.rv-sec-h .btn{margin-inline-start:auto}
+.rv-n{width:30px;height:30px;border-radius:9px;background:#E7EFFE;color:#1D4ED8;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex:none}
+.rv-chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:14px}.rv-chip{background:#F3F6FB;border:1px solid var(--line);color:var(--navy);border-radius:30px;padding:3px 11px;font-size:11px;font-weight:700}
+.flt-grid.wide{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+.rv-adv{margin-top:14px;border:1px solid var(--line);border-radius:12px;padding:0 14px}.rv-adv summary{cursor:pointer;padding:12px 0;font-weight:700;color:var(--navy);font-size:14px}.rv-adv[open] summary{border-bottom:1px solid var(--line);margin-bottom:12px}.rv-adv>div:last-child{padding-bottom:14px}
+.rv-edit{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:linear-gradient(90deg,#FFF8E1,#FFFDF5);border:1px solid #F1DFA0;border-radius:14px;padding:12px 16px;margin-bottom:14px}.rv-edit b{display:block;font-size:16px;color:var(--navy);margin-top:6px}.rv-edit small{color:var(--muted);font-size:12px}.rv-edit-tag{background:#D4AF37;color:#0F172A;border-radius:30px;padding:2px 10px;font-size:11px;font-weight:800}
+.rv-res-h{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:16px 19px;border-bottom:1px solid var(--line)}.rv-res-h h2{margin:0 0 2px}.rv-res-h p{margin:0}
+.res{max-height:560px}.res th{position:sticky;top:0;z-index:1}.res tbody tr:nth-child(even) td{background:#FAFBFE}.res tbody tr:hover td{background:#EEF4FF}
+.rv-sticky{position:sticky;bottom:10px;z-index:5;background:#FFFFFFEE;backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:14px;padding:10px 12px;display:flex;gap:8px;flex-wrap:wrap;box-shadow:0 -4px 18px #0F172A14}
+@media(max-width:700px){.rv-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.rv-hero h2{font-size:20px}}
+@media print{.rv-hero{background:#fff!important;color:#000;border:1px solid #999}.rv-hero h2,.rv-hero p{color:#000}.rv-tag{color:#000;border-color:#999;background:#fff}.rv-sticky,.rv-filter{display:none!important}.res{max-height:none}.rv-kpi{break-inside:avoid}}
 </style></head>
 <body><div class="app nds-report-layout">
 <aside class="side nds-report-sidebar" aria-label="القائمة الجانبية">
@@ -403,6 +418,7 @@ function livePreview(){
  const s=shown();
  $('#result-table').innerHTML=resultTable(s.rows,s.cols,s.footer);
  if($('#result-count'))$('#result-count').textContent=s.rows.length+' سجل';
+ if($('#kpi-rows'))$('#kpi-rows').textContent=s.rows.length;
 }
 function applyReportFilters(){
  const q=($('#report-search')?.value||'').toLowerCase(),s=$('#report-section')?.value||'',t=$('#report-type')?.value||'';
@@ -420,14 +436,15 @@ function makeDraft(template){
 }
 function setActiveNav(){
  document.querySelectorAll('[data-page]').forEach(b=>{
-  const active=b.dataset.page===page||(page.startsWith('source-')&&b.dataset.page===page);
+  const active=b.dataset.page===page||(page.startsWith('source-')&&b.dataset.page===page)||(page==='report-view'&&b.dataset.page==='library');
   b.classList.toggle('si-on',active);
   if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');
  });
 }
 function go(p,opts){
- const allowed=['home','library','builder','permissions','templates','runlog','published','drafts','shared','favorites','source-sales','source-purchases','source-stock','source-partners','access','versions','schedules','datasets','dataset-detail'];
+ const allowed=['home','library','builder','permissions','templates','runlog','published','drafts','shared','favorites','source-sales','source-purchases','source-stock','source-partners','access','versions','schedules','datasets','dataset-detail','report-view'];
  page=allowed.includes(p)?p:'home';
+ if(page==='report-view'&&!(draft&&draft.id))page='library';
  if(page==='builder'&&!draft)draft=makeDraft();
  if(opts&&opts.datasetId)selectedDatasetId=opts.datasetId;
  if(!opts||opts.hash!==false){try{history.replaceState(null,'','#'+page)}catch(e){}}
@@ -438,7 +455,8 @@ function emptyRow(cols,msg){return '<tr><td colspan="'+cols+'" class="empty">'+m
 function reportRows(items){
  if(!items.length)return emptyRow(7,'لا توجد تقارير في هذا القسم حتى الآن.');
  return items.map(r=>'<tr data-section="'+esc(r.section)+'" data-type="'+esc(r.type)+'"><td style="font-weight:700">'+esc(r.name)+(r.description?'<div class="muted" style="max-width:240px;overflow:hidden;text-overflow:ellipsis">'+esc(r.description)+'</div>':'')+'</td><td>'+esc(sectionNames[r.section]||'—')+'</td><td><span class="pill">'+esc(reportTypes[r.type]||reportTypes.list)+'</span></td><td>'+esc(r.datasetName||'—')+'</td><td><span class="pill">'+(r.status==='published'?'منشور':'مسودة')+'</span></td><td>'+esc(new Date(r.updated).toLocaleString('ar-EG'))+'</td><td><div class="actions">'+
- '<button class="btn small" data-act="edit" data-id="'+esc(r.id)+'">فتح</button>'+
+ '<button class="btn small" data-act="view-report" data-id="'+esc(r.id)+'">عرض</button>'+
+ '<button class="btn small" data-act="edit" data-id="'+esc(r.id)+'">تعديل</button>'+
  '<button class="btn small" data-act="execute" data-id="'+esc(r.id)+'">تشغيل</button>'+
  '<button class="btn small" data-act="toggle-publish" data-id="'+esc(r.id)+'">'+(r.status==='published'?'إلغاء النشر':'نشر')+'</button>'+
  '<button class="btn small" data-act="toggle-favorite" data-id="'+esc(r.id)+'">'+(r.favorite?'إزالة من المفضلة':'إضافة للمفضلة')+'</button>'+
@@ -469,7 +487,7 @@ function home(){
  const recentLogs=db.runLog.slice(0,4);
  const activityHtml=recentLogs.length?recentLogs.map(x=>'<div class="home-activity-item"><span class="home-activity-icon">↗</span><div class="home-activity-copy"><b>'+esc(x.reportName||'تقرير غير مسمى')+'</b><span>تشغيل '+esc(x.datasetName||'مصدر محلي')+' · '+Number(x.rowCount||0)+' نتيجة</span></div><time>'+esc(new Date(x.at).toLocaleDateString('ar-EG',{day:'numeric',month:'short'}))+'</time></div>').join(''):'<div class="home-empty-inline"><span>◷</span><b>لا توجد عمليات تشغيل بعد</b><small>عند تشغيل أول تقرير سيظهر سجل النشاط هنا.</small></div>';
  const recentReports=db.reports.slice().sort((a,b)=>Date.parse(b.updated||0)-Date.parse(a.updated||0)).slice(0,4);
- const reportsHtml=recentReports.length?recentReports.map(r=>'<div class="home-report-item"><span class="home-report-mark">▤</span><div class="home-report-copy"><b>'+esc(r.name)+'</b><small>'+esc(sectionNames[r.section]||'')+' · '+esc(reportTypes[r.type]||reportTypes.list)+' · '+esc(r.datasetName||'مصدر بيانات')+'</small></div><span class="home-status '+(r.status==='published'?'is-published':'is-draft')+'">'+(r.status==='published'?'منشور':'مسودة')+'</span><button class="home-open-link" data-act="edit" data-id="'+esc(r.id)+'">فتح</button></div>').join(''):'<div class="home-empty-inline"><span>▤</span><b>مساحة التقارير جاهزة للبدء</b><small>أنشئ تقريرك الأول وسيظهر هنا مع حالته وآخر تعديل.</small><button class="btn primary" data-act="new">إنشاء أول تقرير</button></div>';
+ const reportsHtml=recentReports.length?recentReports.map(r=>'<div class="home-report-item"><span class="home-report-mark">▤</span><div class="home-report-copy"><b>'+esc(r.name)+'</b><small>'+esc(sectionNames[r.section]||'')+' · '+esc(reportTypes[r.type]||reportTypes.list)+' · '+esc(r.datasetName||'مصدر بيانات')+'</small></div><span class="home-status '+(r.status==='published'?'is-published':'is-draft')+'">'+(r.status==='published'?'منشور':'مسودة')+'</span><button class="home-open-link" data-act="view-report" data-id="'+esc(r.id)+'">عرض</button></div>').join(''):'<div class="home-empty-inline"><span>▤</span><b>مساحة التقارير جاهزة للبدء</b><small>أنشئ تقريرك الأول وسيظهر هنا مع حالته وآخر تعديل.</small><button class="btn primary" data-act="new">إنشاء أول تقرير</button></div>';
  const sourceList=db.datasets.slice(0,4);
  const sourceHtml=sourceList.map(d=>'<button class="home-source-item" data-page="'+(['sales','purchases','stock','partners'].includes(d.sourceType)?'source-'+d.sourceType:'datasets')+'"><span class="home-source-icon">'+(d.sourceType==='sales'?'↗':d.sourceType==='purchases'?'↙':d.sourceType==='stock'?'◫':'◇')+'</span><span class="home-source-copy"><b>'+esc(d.name)+'</b><small>'+esc(sourceNames[d.sourceType]||'مصدر مخصص')+'</small></span><span class="home-source-count"><b>'+d.rows.length+'</b><small>سجل</small></span><span class="home-source-arrow">←</span></button>').join('');
  const sourceColors=['#6475F4','#13B88A','#E6A83B','#A78BFA'];
@@ -540,38 +558,75 @@ function datasetDetail(){
  '<div class="card pad"><h2>إضافة سجل جديد</h2>'+(d.columns.length?'<div class="grid">'+d.columns.map(c=>'<div class="field"><label>'+esc(c)+'</label><input data-row-field="'+esc(c)+'" placeholder="'+esc(c)+'"></div>').join('')+'</div>':'<div class="field"><label>أسماء الأعمدة، مفصولة بفاصلة</label><input id="new-columns" placeholder="رقم الفاتورة، التاريخ، العميل، الإجمالي"></div>')+'<button class="btn primary" style="margin-top:14px" data-act="add-dataset-row" data-id="'+esc(d.id)+'">حفظ السجل</button></div>'+
  '<div class="card table-wrap"><table><thead><tr>'+d.columns.map(c=>'<th>'+esc(c)+'</th>').join('')+'</tr></thead><tbody>'+rows+'</tbody></table></div>';
 }
+function ensureDateCol(d){
+ if(d&&!draft.dateCol){const dc=d.columns.includes('تاريخ الفاتورة')?'تاريخ الفاتورة':d.columns.find(c=>isDateCol(d,c));if(dc)draft.dateCol=dc}
+}
+function dataList(d,id,c){return '<datalist id="'+id+'">'+[...new Set(d.rows.map(x=>String(x[c]??'').trim()).filter(Boolean))].map(v=>'<option value="'+esc(v)+'">').join('')+'</datalist>'}
+function quickFilter(d,columns,withSearch){
+ return '<div class="flt-grid'+(withSearch?' wide':'')+'"><div class="field"><label>التاريخ من</label><input type="date" id="date-from" value="'+esc(draft.dateFrom)+'"></div><div class="field"><label>إلى</label><input type="date" id="date-to" value="'+esc(draft.dateTo)+'"></div>'+(columns.includes('الفرع')?'<div class="field"><label>الفرع</label><input id="q-branch" list="dl-branch" value="'+esc(draft.branch)+'" placeholder="كل الفروع" autocomplete="off">'+dataList(d,'dl-branch','الفرع')+'</div>':'')+(columns.includes('العميل')?'<div class="field"><label>العميل</label><input id="q-customer" list="dl-customer" value="'+esc(draft.customer)+'" placeholder="كل العملاء" autocomplete="off">'+dataList(d,'dl-customer','العميل')+'</div>':'')+(withSearch?'<div class="field"><label>بحث نصي</label><input id="search-text" value="'+esc(draft.search)+'" placeholder="كلمة أو رقم">':'')+(withSearch?'</div>':'')+'</div>';
+}
+function filterChips(r){
+ const c=[];
+ if(r.dateFrom||r.dateTo)c.push('الفترة: '+(r.dateFrom||'…')+' ← '+(r.dateTo||'…'));
+ if(r.branch)c.push('الفرع: '+r.branch);
+ if(r.customer)c.push('العميل: '+r.customer);
+ if(r.search)c.push('بحث: '+r.search);
+ r.filters.filter(f=>f.col).forEach(f=>c.push(f.col+' '+filterOps[f.op]+(f.op==='empty'||f.op==='filled'?'':' '+f.value)));
+ return c;
+}
+function sec(n,title,sub,body){return '<div class="card pad"><div class="rv-sec-h"><span class="rv-n">'+n+'</span><div><h2>'+title+'</h2>'+(sub?'<p class="muted">'+sub+'</p>':'')+'</div></div>'+body+'</div>'}
+function resultsCard(s,t){
+ return '<div class="card"><div class="rv-res-h"><div><h2>نتائج المعاينة والتشغيل</h2><p class="muted">تتحدث النتائج تلقائيًا مع كل تغيير في الأعمدة أو الفلاتر</p></div><div class="actions"><span class="pill">'+esc(reportTypes[t])+'</span><span class="pill" id="result-count">'+s.rows.length+' سجل</span><span class="actions no-print"><button class="btn small" data-act="export-csv">تصدير CSV</button><button class="btn small" data-act="export-json">تصدير JSON</button><button class="btn small" data-act="print">طباعة</button></span></div></div><div class="table-wrap res" id="result-table">'+resultTable(s.rows,s.cols,s.footer)+'</div></div>';
+}
 function builder(){
  if(!draft)draft=makeDraft();
  reportDefaults(draft);
- const t=draft.type,d=db.datasets.find(x=>x.id===draft.datasetId);
- if(d&&!draft.dateCol){const dc=d.columns.includes('تاريخ الفاتورة')?'تاريخ الفاتورة':d.columns.find(c=>isDateCol(d,c));if(dc)draft.dateCol=dc}
+ const t=draft.type,d=db.datasets.find(x=>x.id===draft.datasetId),edit=!!draft.id;
+ ensureDateCol(d);
  const noSource=!d&&!draft.datasetId&&db.datasets.length>0;
  if(!d&&!noSource)return head('مصمم التقارير','اختر مصدر بيانات أولًا')+datasets('all');
  const secOptions=Object.keys(sectionNames).map(k=>'<option value="'+k+'" '+(draft.section===k?'selected':'')+'>'+sectionNames[k]+' ('+db.datasets.filter(x=>k==='all'||x.sourceType===k).length+')</option>').join('');
  const inSec=db.datasets.filter(x=>draft.section==='all'||x.sourceType===draft.section);
  const dsOptions=inSec.length?inSec.map(x=>'<option value="'+esc(x.id)+'" '+(d&&x.id===d.id?'selected':'')+'>'+esc(x.name)+'</option>').join(''):'<option value="">لا توجد مصادر في هذا القسم</option>';
  const columns=d?d.columns:[];
- const top=head(draft.id?'تعديل التقرير':'إنشاء تقرير','حدد قسم التقرير ونوعه ومصدر البيانات ثم اضبط الأعمدة والشروط وعاين النتائج واحفظ التقرير')+
- '<div class="notice">البيانات والتقارير تحفظ داخل هذا المتصفح فقط. لا يتم إرسال محتوى إلى ERPNext.</div>'+
- '<div class="card pad"><div class="grid"><div class="field"><label>اسم التقرير</label><input id="draft-name" value="'+esc(draft.name)+'" placeholder="اسم واضح للتقرير"></div><div class="field"><label>قسم التقرير</label><select id="draft-section">'+secOptions+'</select></div><div class="field"><label>نوع التقرير</label><select id="draft-type">'+optsMap(reportTypes,t)+'</select></div><div class="field"><label>مصدر البيانات</label><select id="draft-dataset">'+dsOptions+'</select></div><div class="field"><label>حالة التقرير</label><select id="draft-status"><option value="draft" '+(draft.status!=='published'?'selected':'')+'>مسودة</option><option value="published" '+(draft.status==='published'?'selected':'')+'>منشور</option></select></div></div>'+
+ const vers=edit?db.versions.filter(v=>v.reportId===draft.id).length:0;
+ const banner=edit?'<div class="rv-edit"><div><span class="rv-edit-tag">وضع التعديل</span><b>'+esc(draft.name||'تقرير بدون اسم')+'</b><small>آخر حفظ: '+esc(new Date(draft.updated).toLocaleString('ar-EG'))+' · '+vers+' إصدار محفوظ</small></div><div class="actions no-print"><button class="btn small" data-act="view-report" data-id="'+esc(draft.id)+'">عرض التقرير</button></div></div>':'';
+ const top=head(edit?'تعديل التقرير':'إنشاء تقرير',edit?'عدّل إعدادات التقرير المحفوظ ثم احفظ التغييرات أو احفظها كنسخة جديدة':'حدد قسم التقرير ونوعه ومصدر البيانات ثم اضبط الأعمدة والشروط وعاين النتائج واحفظ التقرير')+
+ '<div class="notice">البيانات والتقارير تحفظ داخل هذا المتصفح فقط. لا يتم إرسال محتوى إلى ERPNext.</div>'+banner+
+ sec(1,'المعلومات الأساسية','اسم التقرير وقسمه ونوعه ومصدر بياناته','<div class="grid"><div class="field"><label>اسم التقرير</label><input id="draft-name" value="'+esc(draft.name)+'" placeholder="اسم واضح للتقرير"></div><div class="field"><label>قسم التقرير</label><select id="draft-section">'+secOptions+'</select></div><div class="field"><label>نوع التقرير</label><select id="draft-type">'+optsMap(reportTypes,t)+'</select></div><div class="field"><label>مصدر البيانات</label><select id="draft-dataset">'+dsOptions+'</select></div><div class="field"><label>حالة التقرير</label><select id="draft-status"><option value="draft" '+(draft.status!=='published'?'selected':'')+'>مسودة</option><option value="published" '+(draft.status==='published'?'selected':'')+'>منشور</option></select></div></div>'+
  '<div class="field" style="margin-top:12px"><label>وصف التقرير (اختياري)</label><input id="draft-desc" value="'+esc(draft.description)+'" placeholder="وصف مختصر لغرض التقرير"></div>'+
- '<p class="muted" style="margin-top:10px">'+typeHints[t]+'</p>';
- if(noSource)return top+'<div class="empty">لا توجد مصادر بيانات في '+sectionNames[draft.section]+' بعد. أنشئ مصدرًا أو استورد ملف CSV أو JSON لهذا القسم ثم ارجع لتصميم التقرير.</div><div class="row"><button class="btn primary" data-page="'+(draft.section==='custom'?'datasets':'source-'+draft.section)+'">إنشاء مصدر بيانات لهذا القسم</button></div></div>';
- if(!columns.length)return top+'<div class="empty">هذا المصدر لا يحتوي على أعمدة بعد. افتح المصدر وأضف الأعمدة والسجلات أولًا.</div><div class="row"><button class="btn primary" data-act="view-dataset" data-id="'+esc(d.id)+'">فتح المصدر وإضافة الأعمدة</button></div></div>';
- const colsBlock=t==='grouped'||t==='timeline'?'':'<h2 style="margin-top:20px">'+(t==='totals'?'الأعمدة المطلوب حساب إجمالياتها':'الأعمدة الظاهرة')+'</h2><div class="row" style="margin-bottom:10px"><button class="btn small" data-act="cols-all">تحديد الكل</button><button class="btn small" data-act="cols-none">إلغاء الكل</button></div><div class="col-grid">'+orderCols(columns).map(c=>'<label class="check"><input type="checkbox" data-col="'+esc(c)+'" '+(draft.columns.includes(c)?'checked':'')+'> '+esc(c)+'</label>').join('')+'</div>';
+ '<p class="muted" style="margin-top:10px">'+typeHints[t]+'</p>');
+ if(noSource)return top+'<div class="card pad"><div class="empty">لا توجد مصادر بيانات في '+sectionNames[draft.section]+' بعد. أنشئ مصدرًا أو استورد ملف CSV أو JSON لهذا القسم ثم ارجع لتصميم التقرير.</div><div class="row"><button class="btn primary" data-page="'+(draft.section==='custom'?'datasets':'source-'+draft.section)+'">إنشاء مصدر بيانات لهذا القسم</button></div></div>';
+ if(!columns.length)return top+'<div class="card pad"><div class="empty">هذا المصدر لا يحتوي على أعمدة بعد. افتح المصدر وأضف الأعمدة والسجلات أولًا.</div><div class="row"><button class="btn primary" data-act="view-dataset" data-id="'+esc(d.id)+'">فتح المصدر وإضافة الأعمدة</button></div></div>';
+ let n=2;
+ const colsBlock=t==='grouped'||t==='timeline'?'':sec(n++,t==='totals'?'الأعمدة المطلوب حساب إجمالياتها':'الأعمدة الظاهرة','اختر الأعمدة التي تظهر في التقرير','<div class="row" style="margin-bottom:12px"><button class="btn small" data-act="cols-all">تحديد الكل</button><button class="btn small" data-act="cols-none">إلغاء الكل</button></div><div class="col-grid">'+orderCols(columns).map(c=>'<label class="check"><input type="checkbox" data-col="'+esc(c)+'" '+(draft.columns.includes(c)?'checked':'')+'> '+esc(c)+'</label>').join('')+'</div>');
  const aggBlock='<div class="field"><label>العملية الحسابية</label><select id="agg-fn">'+optsMap(aggNames,draft.aggFn)+'</select></div><div class="field"><label>عمود القيمة</label><select id="agg-col">'+opts(columns,draft.aggCol,'بدون')+'</select></div>';
- const typeBlock=t==='grouped'?'<h2 style="margin-top:20px">إعدادات الملخص المجمّع</h2><div class="grid"><div class="field"><label>التجميع حسب</label><select id="group-col">'+opts(columns,draft.groupCol,'اختر العمود')+'</select></div>'+aggBlock+'</div>'
-  :t==='timeline'?'<h2 style="margin-top:20px">إعدادات التحليل الزمني</h2><div class="grid"><div class="field"><label>عمود التاريخ</label><select id="date-col">'+opts(columns,draft.dateCol,'اختر العمود')+'</select></div><div class="field"><label>الفترة</label><select id="period">'+optsMap(periodNames,draft.period)+'</select></div>'+aggBlock+'</div>':'';
+ const typeBlock=t==='grouped'?sec(n++,'إعدادات الملخص المجمّع','التجميع حسب عمود وحساب القيم لكل مجموعة','<div class="grid"><div class="field"><label>التجميع حسب</label><select id="group-col">'+opts(columns,draft.groupCol,'اختر العمود')+'</select></div>'+aggBlock+'</div>')
+  :t==='timeline'?sec(n++,'إعدادات التحليل الزمني','تجميع القيم حسب الفترة الزمنية','<div class="grid"><div class="field"><label>عمود التاريخ</label><select id="date-col">'+opts(columns,draft.dateCol,'اختر العمود')+'</select></div><div class="field"><label>الفترة</label><select id="period">'+optsMap(periodNames,draft.period)+'</select></div>'+aggBlock+'</div>'):'';
  const filterRows=draft.filters.map((f,i)=>'<div class="row" data-filter-row style="margin-bottom:10px"><div class="field"><label>العمود</label><select data-f="col">'+opts(columns,f.col,'اختر العمود')+'</select></div><div class="field"><label>نوع المطابقة</label><select data-f="op">'+optsMap(filterOps,f.op)+'</select></div><div class="field"><label>القيمة</label><input data-f="value" value="'+esc(f.value)+'" placeholder="قيمة الفلتر"></div><button class="btn small danger" data-act="remove-filter" data-i="'+i+'">حذف الشرط</button></div>').join('');
  const dateSel=t==='timeline'?'':'<div class="field"><label>عمود التاريخ</label><select id="date-col">'+opts(columns,draft.dateCol,'بدون فلتر تاريخ')+'</select></div>';
- const dl=(id,c)=>'<datalist id="'+id+'">'+[...new Set(d.rows.map(x=>String(x[c]??'').trim()).filter(Boolean))].map(v=>'<option value="'+esc(v)+'">').join('')+'</datalist>';
- const quickBlock='<h2 style="margin-top:20px">فلتر</h2><div class="flt-grid"><div class="field"><label>التاريخ من</label><input type="date" id="date-from" value="'+esc(draft.dateFrom)+'"></div><div class="field"><label>إلى</label><input type="date" id="date-to" value="'+esc(draft.dateTo)+'"></div>'+(columns.includes('الفرع')?'<div class="field"><label>الفرع</label><input id="q-branch" list="dl-branch" value="'+esc(draft.branch)+'" placeholder="كل الفروع" autocomplete="off">'+dl('dl-branch','الفرع')+'</div>':'')+(columns.includes('العميل')?'<div class="field"><label>العميل</label><input id="q-customer" list="dl-customer" value="'+esc(draft.customer)+'" placeholder="كل العملاء" autocomplete="off">'+dl('dl-customer','العميل')+'</div>':'')+'</div>';
- const filterBlock='<h2 style="margin-top:20px">شروط تصفية متقدمة</h2><div class="grid">'+dateSel+'<div class="field"><label>بحث نصي في كل الأعمدة</label><input id="search-text" value="'+esc(draft.search)+'" placeholder="كلمة أو رقم"></div><div class="field"><label>دمج الشروط</label><select id="filter-match"><option value="all" '+(draft.match==='all'?'selected':'')+'>تحقق جميع الشروط</option><option value="any" '+(draft.match==='any'?'selected':'')+'>تحقق أي شرط</option></select></div></div><div id="filters-box" style="margin-top:12px">'+(filterRows||'<p class="muted">لا توجد شروط مضافة. اضغط إضافة شرط لتصفية النتائج.</p>')+'</div><button class="btn small" data-act="add-filter">＋ إضافة شرط</button>';
- const sortBlock=t==='totals'?'':'<h2 style="margin-top:20px">الترتيب والعرض</h2><div class="grid"><div class="field"><label>'+(t==='ranking'?'ترتيب حسب (مطلوب)':'ترتيب النتائج')+'</label><select id="sort-col">'+opts(t==='list'||t==='ranking'?columns:outCols(draft),draft.sortCol,t==='ranking'?'اختر العمود':'بدون ترتيب')+'</select></div><div class="field"><label>الاتجاه</label><select id="sort-dir"><option value="asc" '+(draft.sortDir==='asc'?'selected':'')+'>تصاعدي</option><option value="desc" '+(draft.sortDir==='desc'?'selected':'')+'>تنازلي</option></select></div><div class="field"><label>'+(t==='ranking'?'عدد النتائج (أعلى / أقل)':'الحد الأقصى للسجلات')+'</label><input id="row-limit" type="number" min="1" value="'+esc(draft.limit)+'" placeholder="بدون حد"></div><label class="check" style="align-self:end"><input type="checkbox" id="show-totals" '+(draft.showTotals?'checked':'')+'> إضافة صف الإجمالي</label></div>';
+ const advOpen=draft.filters.length||draft.search?' open':'';
+ const filterBlock=sec(n++,'فلتر','التاريخ والفرع والعميل، وتتحدث النتائج مباشرة أثناء الإدخال',quickFilter(d,columns,false)+
+ '<details class="rv-adv"'+advOpen+'><summary>شروط تصفية متقدمة</summary><div class="grid">'+dateSel+'<div class="field"><label>بحث نصي في كل الأعمدة</label><input id="search-text" value="'+esc(draft.search)+'" placeholder="كلمة أو رقم"></div><div class="field"><label>دمج الشروط</label><select id="filter-match"><option value="all" '+(draft.match==='all'?'selected':'')+'>تحقق جميع الشروط</option><option value="any" '+(draft.match==='any'?'selected':'')+'>تحقق أي شرط</option></select></div></div><div id="filters-box" style="margin-top:12px">'+(filterRows||'<p class="muted">لا توجد شروط مضافة. اضغط إضافة شرط لتصفية النتائج.</p>')+'</div><button class="btn small" data-act="add-filter">＋ إضافة شرط</button></details>');
+ const sortBlock=t==='totals'?'':sec(n++,'الترتيب والعرض','ترتيب النتائج وحدها الأقصى وصف الإجمالي','<div class="grid"><div class="field"><label>'+(t==='ranking'?'ترتيب حسب (مطلوب)':'ترتيب النتائج')+'</label><select id="sort-col">'+opts(t==='list'||t==='ranking'?columns:outCols(draft),draft.sortCol,t==='ranking'?'اختر العمود':'بدون ترتيب')+'</select></div><div class="field"><label>الاتجاه</label><select id="sort-dir"><option value="asc" '+(draft.sortDir==='asc'?'selected':'')+'>تصاعدي</option><option value="desc" '+(draft.sortDir==='desc'?'selected':'')+'>تنازلي</option></select></div><div class="field"><label>'+(t==='ranking'?'عدد النتائج (أعلى / أقل)':'الحد الأقصى للسجلات')+'</label><input id="row-limit" type="number" min="1" value="'+esc(draft.limit)+'" placeholder="بدون حد"></div><label class="check" style="align-self:end"><input type="checkbox" id="show-totals" '+(draft.showTotals?'checked':'')+'> إضافة صف الإجمالي</label></div>');
  const s=shown();
- return top+colsBlock+typeBlock+quickBlock+filterBlock+sortBlock+
- '<div class="row" style="margin-top:18px"><button class="btn primary" data-act="preview">معاينة التقرير</button><button class="btn gold" data-act="run">تشغيل التقرير</button><button class="btn" data-act="save">حفظ التقرير</button><button class="btn" data-act="back">رجوع</button></div></div>'+
- '<div class="card"><div class="pad"><div class="row" style="justify-content:space-between;align-items:center"><h2>نتائج المعاينة والتشغيل</h2><div class="actions"><span class="pill">'+esc(reportTypes[t])+'</span><span class="pill" id="result-count">'+s.rows.length+' سجل</span></div></div></div><div class="table-wrap" id="result-table">'+resultTable(s.rows,s.cols,s.footer)+'</div><div class="footer"><button class="btn small" data-act="export-csv">تصدير CSV</button><button class="btn small" data-act="export-json">تصدير JSON</button><button class="btn small" data-act="print">طباعة التقرير</button></div></div>';
+ const bar=edit?'<div class="rv-sticky no-print"><button class="btn primary" data-act="save">حفظ التغييرات</button><button class="btn" data-act="save-copy">حفظ كنسخة جديدة</button><button class="btn" data-act="view-report" data-id="'+esc(draft.id)+'">عرض التقرير</button><button class="btn gold" data-act="run">تشغيل التقرير</button><button class="btn" data-act="cancel-edit">إلغاء</button></div>'
+  :'<div class="rv-sticky no-print"><button class="btn primary" data-act="save">حفظ التقرير</button><button class="btn gold" data-act="run">تشغيل التقرير</button><button class="btn" data-act="back">رجوع</button></div>';
+ return top+colsBlock+typeBlock+filterBlock+sortBlock+resultsCard(s,t)+bar;
+}
+function reportView(){
+ reportDefaults(draft);
+ const saved=db.reports.find(x=>x.id===draft.id)||draft,d=db.datasets.find(x=>x.id===draft.datasetId),t=draft.type;
+ const top=head('عرض التقرير','عرض نتائج التقرير المحفوظ مع إمكانية تصفية العرض والتصدير والطباعة');
+ if(!d)return top+'<div class="notice">مصدر بيانات هذا التقرير غير موجود. افتح التقرير للتعديل واختر مصدرًا صالحًا.</div><div class="row"><button class="btn primary" data-act="edit" data-id="'+esc(draft.id)+'">تعديل التقرير</button><button class="btn" data-page="library">رجوع إلى المكتبة</button></div>';
+ ensureDateCol(d);
+ const columns=d.columns,s=shown(),pub=saved.status==='published',vers=db.versions.filter(v=>v.reportId===draft.id).length;
+ const hero='<div class="rv-hero"><div><div class="rv-tags"><span class="rv-tag'+(pub?' ok':'')+'">'+(pub?'منشور':'مسودة')+'</span><span class="rv-tag">'+esc(sectionNames[draft.section]||'—')+'</span><span class="rv-tag">'+esc(reportTypes[t])+'</span>'+(saved.favorite?'<span class="rv-tag">★ مفضل</span>':'')+'</div><h2>'+esc(draft.name)+'</h2><p>'+esc(draft.description||('مصدر البيانات: '+(draft.datasetName||d.name)))+'</p></div>'+
+ '<div class="rv-actions no-print"><button class="btn primary" data-act="edit" data-id="'+esc(draft.id)+'">تعديل التقرير</button><button class="btn" data-act="toggle-publish" data-id="'+esc(draft.id)+'">'+(pub?'إلغاء النشر':'نشر')+'</button><button class="btn" data-act="toggle-favorite" data-id="'+esc(draft.id)+'">'+(saved.favorite?'إزالة من المفضلة':'إضافة للمفضلة')+'</button><button class="btn" data-act="share-report" data-id="'+esc(draft.id)+'">مشاركة</button><button class="btn" data-page="library">رجوع للمكتبة</button></div></div>';
+ const kpis='<div class="rv-kpis"><div class="rv-kpi"><small>عدد السجلات</small><b id="kpi-rows">'+s.rows.length+'</b></div><div class="rv-kpi"><small>عدد الأعمدة</small><b>'+s.cols.length+'</b></div><div class="rv-kpi"><small>الإصدارات المحفوظة</small><b>'+vers+'</b></div><div class="rv-kpi"><small>آخر تعديل</small><b style="font-size:16px">'+esc(new Date(saved.updated).toLocaleDateString('ar-EG'))+'</b></div></div>';
+ const chips=filterChips(reportDefaults({...saved,filters:(saved.filters||[]).map(f=>({...f}))},db.datasets));
+ const filt='<div class="card pad rv-filter no-print"><div class="rv-sec-h"><span class="rv-n">⌕</span><div><h2>تصفية العرض</h2><p class="muted">التصفية هنا للعرض فقط ولا تغيّر التقرير المحفوظ. لتغيير شروطه اضغط تعديل التقرير.</p></div><button class="btn small" data-act="view-reset">إعادة الضبط</button></div>'+quickFilter(d,columns,true)+'<div class="rv-chips"><span class="muted">شروط التقرير المحفوظة:</span>'+(chips.length?chips.map(c=>'<span class="rv-chip">'+esc(c)+'</span>').join(''):'<span class="rv-chip">بدون شروط تصفية</span>')+'</div></div>';
+ return top+hero+kpis+filt+resultsCard(s,t);
 }
 function resultTable(rows,cols,footer){return '<table><thead><tr>'+cols.map(c=>'<th>'+esc(c)+'</th>').join('')+'</tr></thead><tbody>'+(rows.map(r=>'<tr>'+cols.map(c=>'<td>'+esc(r[c])+'</td>').join('')+'</tr>').join('')||emptyRow(Math.max(cols.length,1),'لا توجد نتائج. تحقق من الفلاتر أو أضف بيانات للمصدر.'))+(footer?'<tr style="font-weight:800;background:#F3F6FB">'+cols.map(c=>'<td>'+esc(footer[c])+'</td>').join('')+'</tr>':'')+'</tbody></table>'}
 function runlog(){
@@ -598,7 +653,7 @@ function schedules(){
 }
 function render(){
  const views={
- home:home,library:library,builder:builder,templates:templates,runlog:runlog,
+ home:home,library:library,builder:builder,'report-view':reportView,templates:templates,runlog:runlog,
  permissions:()=>settingsView('permissions'),access:()=>settingsView('access'),
  published:()=>collectionPage('published'),drafts:()=>collectionPage('drafts'),
  shared:()=>collectionPage('shared'),favorites:()=>collectionPage('favorites'),
@@ -610,11 +665,16 @@ function render(){
  setActiveNav();
 }
 function newDraft(){draft=makeDraft();lastRows=[];go('builder')}
-function openReport(id,execute){
+function openReport(id,mode){
  const r=db.reports.find(x=>x.id===id);if(!r)return;
  draft={...r,columns:r.columns.slice(),filters:(r.filters||[]).map(f=>({...f})),sharedWith:(r.sharedWith||[]).slice()};
- lastRows=[];go('builder');
- if(execute)setTimeout(()=>run(true),0);
+ lastRows=[];
+ if(mode==='edit'){go('builder');return}
+ if(mode==='run'){
+  const d=db.datasets.find(x=>x.id===draft.datasetId);
+  if(d){try{const out=compute(reportDefaults(draft),d);db.runLog.unshift({id:uid(),reportId:draft.id,reportName:draft.name,reportType:draft.type,datasetName:d.name,rowCount:out.rows.length,at:new Date().toISOString(),outcome:'نجاح'});db.runLog=db.runLog.slice(0,500);persist()}catch(err){}}
+ }
+ go('report-view');
 }
 function syncDraftFromForm(){
  if(!draft)return;
@@ -649,7 +709,7 @@ function save(){
  const i=db.reports.findIndex(x=>x.id===item.id);if(i<0)db.reports.unshift(item);else db.reports[i]=item;
  db.versions.unshift({id:uid(),reportId:item.id,reportName:item.name,at:item.updated,snapshot:JSON.parse(JSON.stringify(item))});
  db.versions=db.versions.slice(0,300);
- if(persist()){draft={...item};alert('تم حفظ التقرير محليًا وإنشاء إصدار جديد.');go('library')}
+ if(persist()){draft={...item};alert('تم حفظ التقرير محليًا وإنشاء إصدار جديد.');go('report-view')}
 }
 function download(name,content,type){
  const blob=new Blob([content],{type:type}),url=URL.createObjectURL(blob),a=document.createElement('a');
@@ -699,11 +759,15 @@ document.addEventListener('click',e=>{
  if(a==='remove-filter'){syncDraftFromForm();draft.filters=draft.filters.filter((x,i)=>i!==Number(b.dataset.i));render();}
  if(a==='cols-all'||a==='cols-none'){syncDraftFromForm();const d=db.datasets.find(x=>x.id===draft.datasetId);draft.columns=a==='cols-all'&&d?d.columns.slice():[];render();}
  if(a==='save')save();
+ if(a==='save-copy'&&draft){syncDraftFromForm();draft.id=null;draft.name=(draft.name||'').trim()+' - نسخة';save();}
+ if(a==='cancel-edit')go('library');
+ if(a==='view-reset'&&draft&&draft.id)openReport(draft.id,'view');
  if(a==='delete-report'){
   if(confirm('حذف التقرير نهائيًا من مساحة هذا المتصفح؟')){db.reports=db.reports.filter(x=>x.id!==id);db.versions=db.versions.filter(x=>x.reportId!==id);persist();render();}
  }
- if(a==='edit')openReport(id,false);
- if(a==='execute')openReport(id,true);
+ if(a==='view-report')openReport(id,'view');
+ if(a==='edit')openReport(id,'edit');
+ if(a==='execute')openReport(id,'run');
  if(a==='toggle-publish'){
   const r=db.reports.find(x=>x.id===id);if(r){r.status=r.status==='published'?'draft':'published';r.updated=new Date().toISOString();persist();render();}
  }
