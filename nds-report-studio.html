@@ -29,10 +29,10 @@ input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 
 .table-wrap{overflow:auto;width:100%}table{border-collapse:collapse;width:100%;min-width:600px}th,td{padding:12px 16px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}th{background:#F3F6FB;color:var(--muted);font-size:12px;font-weight:700}td{color:var(--navy);font-size:14px}td input{min-width:100px}
 .actions{display:flex;gap:6px;flex-wrap:wrap}.pill{display:inline-block;background:#E7EFFE;color:#1D4ED8;border-radius:30px;padding:4px 10px;font-size:11px;font-weight:700}
 .notice{padding:12px 14px;background:#EEF5FF;border:1px solid #CBDCF2;border-radius:10px;color:#214B78;margin-bottom:14px}.empty{padding:30px;text-align:center;color:var(--muted)}.hidden{display:none!important}
-.check{display:flex;gap:8px;align-items:center;min-height:40px}.check input{width:18px;min-height:18px}.footer{display:flex;gap:9px;flex-wrap:wrap;padding:14px;background:#F3F6FB;border-top:1px solid var(--line)}
+.check{display:flex;gap:8px;align-items:center;min-height:40px}.col-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.flt-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.check input{width:18px;min-height:18px}.footer{display:flex;gap:9px;flex-wrap:wrap;padding:14px;background:#F3F6FB;border-top:1px solid var(--line)}
 button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #93C5FD;outline-offset:2px}
 @media(max-width:900px){.app{flex-direction:column;min-height:100dvh}.side{flex:none;width:100%;max-width:none;display:flex;align-items:center;gap:6px;overflow-x:auto;white-space:nowrap;padding:8px 10px!important;border-inline-start:0;border-bottom:1px solid var(--line)}.side .sg,.side .brand,.side-note{display:none}.side .si{flex:0 0 auto;min-height:40px;padding:0 12px;font-size:13px}.main{width:100%;min-width:0;flex:1 1 auto}.top{padding:16px 14px 0!important}#view{padding:14px!important}}
-@media(max-width:560px){.top h1{font-size:21px}.top>div{min-width:0}#view{padding:10px!important}.pad{padding:14px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.field{min-width:0}.row{align-items:stretch}.btn{padding:0 12px}.table-wrap th,.table-wrap td{padding:10px;font-size:12px}}
+@media(max-width:560px){.col-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.top h1{font-size:21px}.top>div{min-width:0}#view{padding:10px!important}.pad{padding:14px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.field{min-width:0}.row{align-items:stretch}.btn{padding:0 12px}.table-wrap th,.table-wrap td{padding:10px;font-size:12px}}
 @media(max-width:380px){.grid{grid-template-columns:1fr}.top{gap:10px}.top>div{min-width:100%}}
 @media print{.side,.top .btn,.no-print,.footer{display:none!important}.app{display:block}.main{padding:0}.top{padding:0}#view{padding:0}.card{break-inside:avoid}}
 
@@ -221,10 +221,11 @@ const typeHints={list:'عرض السجلات بالأعمدة المختارة �
 const aggNames={sum:'المجموع',count:'العدد',avg:'المتوسط',min:'الأدنى',max:'الأعلى'};
 const periodNames={day:'يومي',month:'شهري',year:'سنوي'};
 const filterOps={contains:'يحتوي على',equals:'يساوي',not:'لا يساوي',starts:'يبدأ بـ',gt:'أكبر من',gte:'أكبر من أو يساوي',lt:'أصغر من',lte:'أصغر من أو يساوي',empty:'فارغ',filled:'غير فارغ'};
-const starter=[{id:'sample-sales',name:'نموذج فواتير مبيعات توضيحي',source:'بيانات توضيحية محلية',sourceType:'sales',columns:['رقم الفاتورة','التاريخ','العميل','المدينة','الإجمالي','الحالة'],rows:[
-{'رقم الفاتورة':'INV-001','التاريخ':'2026-10-28','العميل':'عميل تجريبي 1','المدينة':'الرياض','الإجمالي':'1250','الحالة':'معتمد'},
-{'رقم الفاتورة':'INV-002','التاريخ':'2026-10-29','العميل':'عميل تجريبي 2','المدينة':'جدة','الإجمالي':'740','الحالة':'مسودة'},
-{'رقم الفاتورة':'INV-003','التاريخ':'2026-10-30','العميل':'عميل تجريبي 3','المدينة':'الدمام','الإجمالي':'2100','الحالة':'معتمد'}],sample:true}];
+const starter=[{id:'sample-sales',name:'نموذج فواتير مبيعات توضيحي',source:'بيانات توضيحية محلية',sourceType:'sales',columns:['العميل','رقم الضريبة للعميل','الحالة','العنوان','رقم الفاتورة','تاريخ الفاتورة','تاريخ الاستحقاق','مركز التكلفة','المشروع','العملة','الإجمالي','الخصم','الصافي','الضريبة','الصافي بعد الضريبة','المندوب','الفرع','المستخدم','المبلغ المسدد'],rows:[
+{'العميل':'عميل تجريبي 1','رقم الضريبة للعميل':'300012345600003','الحالة':'معتمد','العنوان':'الرياض','رقم الفاتورة':'INV-001','تاريخ الفاتورة':'2026-10-28','تاريخ الاستحقاق':'2026-11-27','مركز التكلفة':'مبيعات','المشروع':'مشروع أ','العملة':'SAR','الإجمالي':'1250','الخصم':'50','الصافي':'1200','الضريبة':'180','الصافي بعد الضريبة':'1380','المندوب':'أحمد','الفرع':'الرياض','المستخدم':'admin','المبلغ المسدد':'1380'},
+{'العميل':'عميل تجريبي 2','رقم الضريبة للعميل':'300098765400003','الحالة':'مسودة','العنوان':'جدة','رقم الفاتورة':'INV-002','تاريخ الفاتورة':'2026-10-29','تاريخ الاستحقاق':'2026-11-28','مركز التكلفة':'مبيعات','المشروع':'مشروع ب','العملة':'SAR','الإجمالي':'740','الخصم':'0','الصافي':'740','الضريبة':'111','الصافي بعد الضريبة':'851','المندوب':'سامي','الفرع':'جدة','المستخدم':'admin','المبلغ المسدد':'0'},
+{'العميل':'عميل تجريبي 3','رقم الضريبة للعميل':'300055512300003','الحالة':'معتمد','العنوان':'الدمام','رقم الفاتورة':'INV-003','تاريخ الفاتورة':'2026-10-30','تاريخ الاستحقاق':'2026-11-29','مركز التكلفة':'خدمات','المشروع':'مشروع أ','العملة':'SAR','الإجمالي':'2100','الخصم':'100','الصافي':'2000','الضريبة':'300','الصافي بعد الضريبة':'2300','المندوب':'أحمد','الفرع':'الرياض','المستخدم':'user1','المبلغ المسدد':'1000'},
+{'العميل':'عميل تجريبي 1','رقم الضريبة للعميل':'300012345600003','الحالة':'معتمد','العنوان':'الرياض','رقم الفاتورة':'INV-004','تاريخ الفاتورة':'2026-11-01','تاريخ الاستحقاق':'2026-12-01','مركز التكلفة':'مبيعات','المشروع':'مشروع ج','العملة':'SAR','الإجمالي':'860','الخصم':'10','الصافي':'850','الضريبة':'127.5','الصافي بعد الضريبة':'977.5','المندوب':'سامي','الفرع':'جدة','المستخدم':'user1','المبلغ المسدد':'977.5'}],sample:true}];
 const permissionDefs=[
 ['view_library','عرض مكتبة التقارير'],['open_report','فتح التقارير'],['run_report','تشغيل التقارير'],
 ['create_report','إنشاء تقرير'],['edit_own','تعديل تقاريري'],['edit_others','تعديل تقارير الآخرين'],
@@ -242,6 +243,7 @@ function normalize(data){
  const x=data&&Array.isArray(data.reports)&&Array.isArray(data.datasets)?data:freshDb();
  x.reports.forEach(r=>{if(!r.status)r.status='draft';if(typeof r.favorite!=='boolean')r.favorite=false;if(!Array.isArray(r.sharedWith))r.sharedWith=[];if(!Array.isArray(r.columns))r.columns=[]});
  x.datasets.forEach(d=>{if(!d.sourceType)d.sourceType='custom';if(!Array.isArray(d.columns))d.columns=[];if(!Array.isArray(d.rows))d.rows=[];d.rows=d.rows.map(row=>Array.isArray(row)?Object.fromEntries(d.columns.map((c,i)=>[c,row[i]??''])):row)});
+ x.datasets.forEach(d=>{if(d.id==='sample-sales'&&d.sample&&!d.columns.includes('رقم الضريبة للعميل')){const ren={'التاريخ':'تاريخ الفاتورة','المدينة':'العنوان'},m=v=>ren[v]||v;x.reports.forEach(r=>{if(r.datasetId!==d.id)return;r.columns=r.columns.map(m);['dateCol','sortCol','groupCol','aggCol','filterCol'].forEach(k=>{if(r[k])r[k]=m(r[k])});if(Array.isArray(r.filters))r.filters.forEach(f=>{f.col=m(f.col)})});d.columns=starter[0].columns.slice();d.rows=starter[0].rows.map(r=>({...r}))}});
  x.reports.forEach(r=>reportDefaults(r,x.datasets));
  if(!Array.isArray(x.runLog))x.runLog=[];
  if(!Array.isArray(x.versions))x.versions=[];
@@ -263,7 +265,7 @@ function reportDefaults(r,sets){
  r.filters=r.filters.map(f=>({col:f.col||'',op:filterOps[f.op]?f.op:'contains',value:f.value==null?'':String(f.value)}));
  delete r.filterCol;delete r.filterOp;delete r.filterValue;
  if(r.match!=='any')r.match='all';
- ['search','dateCol','dateFrom','dateTo','groupCol','aggCol','sortCol','limit'].forEach(k=>{r[k]=r[k]==null?'':String(r[k])});
+ ['search','dateCol','dateFrom','dateTo','branch','customer','groupCol','aggCol','sortCol','limit'].forEach(k=>{r[k]=r[k]==null?'':String(r[k])});
  if(!aggNames[r.aggFn])r.aggFn='sum';
  if(!periodNames[r.period])r.period='month';
  if(r.sortDir!=='desc')r.sortDir='asc';
@@ -322,10 +324,12 @@ function footerRow(r,cols,out,lab){
  return f;
 }
 function compute(r,d){
- const q=r.search.trim().toLowerCase(),from=r.dateFrom?Date.parse(r.dateFrom):null,to=r.dateTo?Date.parse(r.dateTo):null;
+ const q=r.search.trim().toLowerCase(),qb=r.branch.trim().toLowerCase(),qc=r.customer.trim().toLowerCase(),from=r.dateFrom?Date.parse(r.dateFrom):null,to=r.dateTo?Date.parse(r.dateTo):null;
  const fs=r.filters.filter(f=>f.col&&(f.op==='empty'||f.op==='filled'||f.value!==''));
  const rows=d.rows.filter(row=>{
   if(q&&!d.columns.some(c=>String(row[c]??'').toLowerCase().includes(q)))return false;
+  if(qb&&!String(row['الفرع']??'').toLowerCase().includes(qb))return false;
+  if(qc&&!String(row['العميل']??'').toLowerCase().includes(qc))return false;
   if(r.dateCol&&(from!==null||to!==null)){const t=parseDate(row[r.dateCol]);if(t===null)return false;if(from!==null&&t<from)return false;if(to!==null&&t>to)return false}
   if(!fs.length)return true;
   return r.match==='any'?fs.some(f=>testFilter(row,f)):fs.every(f=>testFilter(row,f));
@@ -386,10 +390,19 @@ function switchDataset(id){
 }
 function opts(list,sel,blank){return (blank?'<option value="">'+blank+'</option>':'')+list.map(c=>'<option value="'+esc(c)+'" '+(c===sel?'selected':'')+'>'+esc(c)+'</option>').join('')}
 function optsMap(map,sel){return Object.keys(map).map(k=>'<option value="'+k+'" '+(k===sel?'selected':'')+'>'+esc(map[k])+'</option>').join('')}
+const colOrder=['العميل','رقم الضريبة للعميل','الحالة','العنوان','رقم الفاتورة','تاريخ الفاتورة','تاريخ الاستحقاق','مركز التكلفة','المشروع','العملة','الإجمالي','الخصم','الصافي','الضريبة','الصافي بعد الضريبة','المندوب','الفرع','المستخدم','المبلغ المسدد'];
+function orderCols(list){return colOrder.filter(c=>list.includes(c)).concat(list.filter(c=>!colOrder.includes(c)))}
 function shown(){
- if(lastRows.length&&lastCols)return {cols:lastCols,rows:lastRows,footer:lastFooter};
  const d=draft&&db.datasets.find(x=>x.id===draft.datasetId);
+ if(d&&!validateDraft()){try{return compute(reportDefaults(draft),d)}catch(err){}}
  return {cols:d?outCols(draft):[],rows:[],footer:null};
+}
+function livePreview(){
+ if(!draft||!$('#result-table'))return;
+ syncDraftFromForm();
+ const s=shown();
+ $('#result-table').innerHTML=resultTable(s.rows,s.cols,s.footer);
+ if($('#result-count'))$('#result-count').textContent=s.rows.length+' سجل';
 }
 function applyReportFilters(){
  const q=($('#report-search')?.value||'').toLowerCase(),s=$('#report-section')?.value||'',t=$('#report-type')?.value||'';
@@ -531,6 +544,7 @@ function builder(){
  if(!draft)draft=makeDraft();
  reportDefaults(draft);
  const t=draft.type,d=db.datasets.find(x=>x.id===draft.datasetId);
+ if(d&&!draft.dateCol){const dc=d.columns.includes('تاريخ الفاتورة')?'تاريخ الفاتورة':d.columns.find(c=>isDateCol(d,c));if(dc)draft.dateCol=dc}
  const noSource=!d&&!draft.datasetId&&db.datasets.length>0;
  if(!d&&!noSource)return head('مصمم التقارير','اختر مصدر بيانات أولًا')+datasets('all');
  const secOptions=Object.keys(sectionNames).map(k=>'<option value="'+k+'" '+(draft.section===k?'selected':'')+'>'+sectionNames[k]+' ('+db.datasets.filter(x=>k==='all'||x.sourceType===k).length+')</option>').join('');
@@ -544,19 +558,20 @@ function builder(){
  '<p class="muted" style="margin-top:10px">'+typeHints[t]+'</p>';
  if(noSource)return top+'<div class="empty">لا توجد مصادر بيانات في '+sectionNames[draft.section]+' بعد. أنشئ مصدرًا أو استورد ملف CSV أو JSON لهذا القسم ثم ارجع لتصميم التقرير.</div><div class="row"><button class="btn primary" data-page="'+(draft.section==='custom'?'datasets':'source-'+draft.section)+'">إنشاء مصدر بيانات لهذا القسم</button></div></div>';
  if(!columns.length)return top+'<div class="empty">هذا المصدر لا يحتوي على أعمدة بعد. افتح المصدر وأضف الأعمدة والسجلات أولًا.</div><div class="row"><button class="btn primary" data-act="view-dataset" data-id="'+esc(d.id)+'">فتح المصدر وإضافة الأعمدة</button></div></div>';
- const colsBlock=t==='grouped'||t==='timeline'?'':'<h2 style="margin-top:20px">'+(t==='totals'?'الأعمدة المطلوب حساب إجمالياتها':'الأعمدة الظاهرة')+'</h2><div class="row" style="margin-bottom:10px"><button class="btn small" data-act="cols-all">تحديد الكل</button><button class="btn small" data-act="cols-none">إلغاء الكل</button></div><div class="grid">'+columns.map(c=>'<label class="check"><input type="checkbox" data-col="'+esc(c)+'" '+(draft.columns.includes(c)?'checked':'')+'> '+esc(c)+'</label>').join('')+'</div>';
+ const colsBlock=t==='grouped'||t==='timeline'?'':'<h2 style="margin-top:20px">'+(t==='totals'?'الأعمدة المطلوب حساب إجمالياتها':'الأعمدة الظاهرة')+'</h2><div class="row" style="margin-bottom:10px"><button class="btn small" data-act="cols-all">تحديد الكل</button><button class="btn small" data-act="cols-none">إلغاء الكل</button></div><div class="col-grid">'+orderCols(columns).map(c=>'<label class="check"><input type="checkbox" data-col="'+esc(c)+'" '+(draft.columns.includes(c)?'checked':'')+'> '+esc(c)+'</label>').join('')+'</div>';
  const aggBlock='<div class="field"><label>العملية الحسابية</label><select id="agg-fn">'+optsMap(aggNames,draft.aggFn)+'</select></div><div class="field"><label>عمود القيمة</label><select id="agg-col">'+opts(columns,draft.aggCol,'بدون')+'</select></div>';
  const typeBlock=t==='grouped'?'<h2 style="margin-top:20px">إعدادات الملخص المجمّع</h2><div class="grid"><div class="field"><label>التجميع حسب</label><select id="group-col">'+opts(columns,draft.groupCol,'اختر العمود')+'</select></div>'+aggBlock+'</div>'
   :t==='timeline'?'<h2 style="margin-top:20px">إعدادات التحليل الزمني</h2><div class="grid"><div class="field"><label>عمود التاريخ</label><select id="date-col">'+opts(columns,draft.dateCol,'اختر العمود')+'</select></div><div class="field"><label>الفترة</label><select id="period">'+optsMap(periodNames,draft.period)+'</select></div>'+aggBlock+'</div>':'';
  const filterRows=draft.filters.map((f,i)=>'<div class="row" data-filter-row style="margin-bottom:10px"><div class="field"><label>العمود</label><select data-f="col">'+opts(columns,f.col,'اختر العمود')+'</select></div><div class="field"><label>نوع المطابقة</label><select data-f="op">'+optsMap(filterOps,f.op)+'</select></div><div class="field"><label>القيمة</label><input data-f="value" value="'+esc(f.value)+'" placeholder="قيمة الفلتر"></div><button class="btn small danger" data-act="remove-filter" data-i="'+i+'">حذف الشرط</button></div>').join('');
  const dateSel=t==='timeline'?'':'<div class="field"><label>عمود التاريخ</label><select id="date-col">'+opts(columns,draft.dateCol,'بدون فلتر تاريخ')+'</select></div>';
- const filterBlock='<h2 style="margin-top:20px">شروط التصفية</h2><div class="grid"><div class="field"><label>بحث نصي في كل الأعمدة</label><input id="search-text" value="'+esc(draft.search)+'" placeholder="كلمة أو رقم"></div><div class="field"><label>دمج الشروط</label><select id="filter-match"><option value="all" '+(draft.match==='all'?'selected':'')+'>تحقق جميع الشروط</option><option value="any" '+(draft.match==='any'?'selected':'')+'>تحقق أي شرط</option></select></div></div><div id="filters-box" style="margin-top:12px">'+(filterRows||'<p class="muted">لا توجد شروط مضافة. اضغط إضافة شرط لتصفية النتائج.</p>')+'</div><button class="btn small" data-act="add-filter">＋ إضافة شرط</button>'+
- '<h2 style="margin-top:20px">الفترة الزمنية</h2><div class="grid">'+dateSel+'<div class="field"><label>من تاريخ</label><input type="date" id="date-from" value="'+esc(draft.dateFrom)+'"></div><div class="field"><label>إلى تاريخ</label><input type="date" id="date-to" value="'+esc(draft.dateTo)+'"></div></div>';
+ const dl=(id,c)=>'<datalist id="'+id+'">'+[...new Set(d.rows.map(x=>String(x[c]??'').trim()).filter(Boolean))].map(v=>'<option value="'+esc(v)+'">').join('')+'</datalist>';
+ const quickBlock='<h2 style="margin-top:20px">فلتر</h2><div class="flt-grid"><div class="field"><label>التاريخ من</label><input type="date" id="date-from" value="'+esc(draft.dateFrom)+'"></div><div class="field"><label>إلى</label><input type="date" id="date-to" value="'+esc(draft.dateTo)+'"></div>'+(columns.includes('الفرع')?'<div class="field"><label>الفرع</label><input id="q-branch" list="dl-branch" value="'+esc(draft.branch)+'" placeholder="كل الفروع" autocomplete="off">'+dl('dl-branch','الفرع')+'</div>':'')+(columns.includes('العميل')?'<div class="field"><label>العميل</label><input id="q-customer" list="dl-customer" value="'+esc(draft.customer)+'" placeholder="كل العملاء" autocomplete="off">'+dl('dl-customer','العميل')+'</div>':'')+'</div>';
+ const filterBlock='<h2 style="margin-top:20px">شروط تصفية متقدمة</h2><div class="grid">'+dateSel+'<div class="field"><label>بحث نصي في كل الأعمدة</label><input id="search-text" value="'+esc(draft.search)+'" placeholder="كلمة أو رقم"></div><div class="field"><label>دمج الشروط</label><select id="filter-match"><option value="all" '+(draft.match==='all'?'selected':'')+'>تحقق جميع الشروط</option><option value="any" '+(draft.match==='any'?'selected':'')+'>تحقق أي شرط</option></select></div></div><div id="filters-box" style="margin-top:12px">'+(filterRows||'<p class="muted">لا توجد شروط مضافة. اضغط إضافة شرط لتصفية النتائج.</p>')+'</div><button class="btn small" data-act="add-filter">＋ إضافة شرط</button>';
  const sortBlock=t==='totals'?'':'<h2 style="margin-top:20px">الترتيب والعرض</h2><div class="grid"><div class="field"><label>'+(t==='ranking'?'ترتيب حسب (مطلوب)':'ترتيب النتائج')+'</label><select id="sort-col">'+opts(t==='list'||t==='ranking'?columns:outCols(draft),draft.sortCol,t==='ranking'?'اختر العمود':'بدون ترتيب')+'</select></div><div class="field"><label>الاتجاه</label><select id="sort-dir"><option value="asc" '+(draft.sortDir==='asc'?'selected':'')+'>تصاعدي</option><option value="desc" '+(draft.sortDir==='desc'?'selected':'')+'>تنازلي</option></select></div><div class="field"><label>'+(t==='ranking'?'عدد النتائج (أعلى / أقل)':'الحد الأقصى للسجلات')+'</label><input id="row-limit" type="number" min="1" value="'+esc(draft.limit)+'" placeholder="بدون حد"></div><label class="check" style="align-self:end"><input type="checkbox" id="show-totals" '+(draft.showTotals?'checked':'')+'> إضافة صف الإجمالي</label></div>';
  const s=shown();
- return top+colsBlock+typeBlock+filterBlock+sortBlock+
+ return top+colsBlock+typeBlock+quickBlock+filterBlock+sortBlock+
  '<div class="row" style="margin-top:18px"><button class="btn primary" data-act="preview">معاينة التقرير</button><button class="btn gold" data-act="run">تشغيل التقرير</button><button class="btn" data-act="save">حفظ التقرير</button><button class="btn" data-act="back">رجوع</button></div></div>'+
- '<div class="card"><div class="pad"><div class="row" style="justify-content:space-between;align-items:center"><h2>نتائج المعاينة والتشغيل</h2><div class="actions"><span class="pill">'+esc(reportTypes[t])+'</span><span class="pill">'+s.rows.length+' سجل</span></div></div></div><div class="table-wrap" id="result-table">'+resultTable(s.rows,s.cols,s.footer)+'</div><div class="footer"><button class="btn small" data-act="export-csv">تصدير CSV</button><button class="btn small" data-act="export-json">تصدير JSON</button><button class="btn small" data-act="print">طباعة التقرير</button></div></div>';
+ '<div class="card"><div class="pad"><div class="row" style="justify-content:space-between;align-items:center"><h2>نتائج المعاينة والتشغيل</h2><div class="actions"><span class="pill">'+esc(reportTypes[t])+'</span><span class="pill" id="result-count">'+s.rows.length+' سجل</span></div></div></div><div class="table-wrap" id="result-table">'+resultTable(s.rows,s.cols,s.footer)+'</div><div class="footer"><button class="btn small" data-act="export-csv">تصدير CSV</button><button class="btn small" data-act="export-json">تصدير JSON</button><button class="btn small" data-act="print">طباعة التقرير</button></div></div>';
 }
 function resultTable(rows,cols,footer){return '<table><thead><tr>'+cols.map(c=>'<th>'+esc(c)+'</th>').join('')+'</tr></thead><tbody>'+(rows.map(r=>'<tr>'+cols.map(c=>'<td>'+esc(r[c])+'</td>').join('')+'</tr>').join('')||emptyRow(Math.max(cols.length,1),'لا توجد نتائج. تحقق من الفلاتر أو أضف بيانات للمصدر.'))+(footer?'<tr style="font-weight:800;background:#F3F6FB">'+cols.map(c=>'<td>'+esc(footer[c])+'</td>').join('')+'</tr>':'')+'</tbody></table>'}
 function runlog(){
@@ -607,7 +622,7 @@ function syncDraftFromForm(){
  val('draft-name','name');val('draft-desc','description');val('draft-section','section');val('draft-dataset','datasetId');val('draft-type','type');val('draft-status','status');
  if(document.querySelector('[data-col]'))draft.columns=[...document.querySelectorAll('[data-col]:checked')].map(x=>x.dataset.col);
  if($('#filters-box'))draft.filters=[...document.querySelectorAll('[data-filter-row]')].map(row=>({col:row.querySelector('[data-f="col"]').value,op:row.querySelector('[data-f="op"]').value,value:row.querySelector('[data-f="value"]').value}));
- val('filter-match','match');val('search-text','search');val('date-col','dateCol');val('date-from','dateFrom');val('date-to','dateTo');
+ val('filter-match','match');val('search-text','search');val('date-col','dateCol');val('date-from','dateFrom');val('date-to','dateTo');val('q-branch','branch');val('q-customer','customer');
  val('group-col','groupCol');val('agg-fn','aggFn');val('agg-col','aggCol');val('period','period');
  val('sort-col','sortCol');val('sort-dir','sortDir');val('row-limit','limit');
  if($('#show-totals'))draft.showTotals=$('#show-totals').checked;
@@ -769,6 +784,7 @@ document.addEventListener('change',e=>{
 });
 document.addEventListener('input',e=>{
  if(e.target.id==='report-search')applyReportFilters();
+ if($('#result-table')&&e.target.closest('#view')&&!/^draft-/.test(e.target.id))livePreview();
 });
 const first=routeFromHash();
 go(first,{hash:false});
