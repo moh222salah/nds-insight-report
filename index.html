@@ -215,6 +215,12 @@ const $=s=>document.querySelector(s);
 const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const uid=()=> 'r'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 const sourceNames={sales:'فواتير المبيعات',purchases:'فواتير المشتريات',stock:'الأصناف والمخزون',partners:'العملاء والموردون',custom:'مصدر مخصص'};
+const sectionNames={all:'كل الأقسام',sales:'المبيعات',purchases:'المشتريات',stock:'المخزون',partners:'العملاء والموردون',custom:'أقسام أخرى (مخصص)'};
+const reportTypes={list:'قائمة تفصيلية',grouped:'ملخص مجمّع',totals:'إجماليات وإحصاءات',ranking:'ترتيب أعلى / أقل',timeline:'تحليل زمني'};
+const typeHints={list:'عرض السجلات بالأعمدة المختارة مع إمكانية التصفية والترتيب وإضافة صف الإجمالي.',grouped:'تجميع السجلات حسب عمود واحد وحساب عدد السجلات والمجموع أو المتوسط أو الأدنى أو الأعلى لكل مجموعة.',totals:'حساب العدد والمجموع والمتوسط والأدنى والأعلى للأعمدة المختارة على كل النتائج بعد التصفية.',ranking:'ترتيب السجلات حسب عمود وعرض أول عدد محدد منها: اختر تنازلي لأعلى النتائج وتصاعدي لأقلها.',timeline:'تجميع القيم حسب الفترة الزمنية يوميًا أو شهريًا أو سنويًا اعتمادًا على عمود التاريخ.'};
+const aggNames={sum:'المجموع',count:'العدد',avg:'المتوسط',min:'الأدنى',max:'الأعلى'};
+const periodNames={day:'يومي',month:'شهري',year:'سنوي'};
+const filterOps={contains:'يحتوي على',equals:'يساوي',not:'لا يساوي',starts:'يبدأ بـ',gt:'أكبر من',gte:'أكبر من أو يساوي',lt:'أصغر من',lte:'أصغر من أو يساوي',empty:'فارغ',filled:'غير فارغ'};
 const starter=[{id:'sample-sales',name:'نموذج فواتير مبيعات توضيحي',source:'بيانات توضيحية محلية',sourceType:'sales',columns:['رقم الفاتورة','التاريخ','العميل','المدينة','الإجمالي','الحالة'],rows:[
 {'رقم الفاتورة':'INV-001','التاريخ':'2026-10-28','العميل':'عميل تجريبي 1','المدينة':'الرياض','الإجمالي':'1250','الحالة':'معتمد'},
 {'رقم الفاتورة':'INV-002','التاريخ':'2026-10-29','العميل':'عميل تجريبي 2','المدينة':'جدة','الإجمالي':'740','الحالة':'مسودة'},
@@ -230,12 +236,13 @@ const accessDefs=[
 ['stock','الوصول إلى الأصناف والمخزون'],['partners','الوصول إلى العملاء والموردين'],
 ['financial','إظهار الحقول المالية'],['export','السماح بتصدير البيانات']
 ];
-let db=load(),page='home',draft=null,lastRows=[],selectedDatasetId=null,homeRange=7;
+let db=load(),page='home',draft=null,lastRows=[],lastCols=null,lastFooter=null,selectedDatasetId=null,homeRange=7;
 function freshDb(){return {reports:[],datasets:starter.map(x=>({...x,rows:x.rows.map(r=>({...r}))})),runLog:[],versions:[],schedules:[],settings:{permissions:{},accessRules:{}}}}
 function normalize(data){
  const x=data&&Array.isArray(data.reports)&&Array.isArray(data.datasets)?data:freshDb();
  x.reports.forEach(r=>{if(!r.status)r.status='draft';if(typeof r.favorite!=='boolean')r.favorite=false;if(!Array.isArray(r.sharedWith))r.sharedWith=[];if(!Array.isArray(r.columns))r.columns=[]});
  x.datasets.forEach(d=>{if(!d.sourceType)d.sourceType='custom';if(!Array.isArray(d.columns))d.columns=[];if(!Array.isArray(d.rows))d.rows=[];d.rows=d.rows.map(row=>Array.isArray(row)?Object.fromEntries(d.columns.map((c,i)=>[c,row[i]??''])):row)});
+ x.reports.forEach(r=>reportDefaults(r,x.datasets));
  if(!Array.isArray(x.runLog))x.runLog=[];
  if(!Array.isArray(x.versions))x.versions=[];
  if(!Array.isArray(x.schedules))x.schedules=[];
@@ -247,6 +254,147 @@ function normalize(data){
 function load(){try{const raw=localStorage.getItem(KEY);return normalize(raw?JSON.parse(raw):null)}catch(e){return freshDb()}}
 function persist(){try{localStorage.setItem(KEY,JSON.stringify(db));return true}catch(e){alert('تعذر الحفظ المحلي: مساحة التخزين غير كافية. صدّر نسخة JSON للاحتفاظ بالعمل.');return false}}
 function routeFromHash(){const route=(location.hash||'#home').slice(1).split('?')[0];return route||'home'}
+function reportDefaults(r,sets){
+ const ds=(sets||db.datasets).find(x=>x.id===r.datasetId);
+ if(!reportTypes[r.type])r.type='list';
+ if(!r.section||!sectionNames[r.section])r.section=ds?ds.sourceType:'all';
+ if(typeof r.description!=='string')r.description='';
+ if(!Array.isArray(r.filters))r.filters=r.filterCol&&r.filterValue?[{col:r.filterCol,op:r.filterOp||'contains',value:r.filterValue}]:[];
+ r.filters=r.filters.map(f=>({col:f.col||'',op:filterOps[f.op]?f.op:'contains',value:f.value==null?'':String(f.value)}));
+ delete r.filterCol;delete r.filterOp;delete r.filterValue;
+ if(r.match!=='any')r.match='all';
+ ['search','dateCol','dateFrom','dateTo','groupCol','aggCol','sortCol','limit'].forEach(k=>{r[k]=r[k]==null?'':String(r[k])});
+ if(!aggNames[r.aggFn])r.aggFn='sum';
+ if(!periodNames[r.period])r.period='month';
+ if(r.sortDir!=='desc')r.sortDir='asc';
+ r.showTotals=!!r.showTotals;
+ return r;
+}
+function num(v){const s=String(v??'').replace(/[٠-٩]/g,c=>'٠١٢٣٤٥٦٧٨٩'.indexOf(c)).replace(/[,٬\s]/g,'').replace('٫','.');return s!==''&&Number.isFinite(Number(s))?Number(s):NaN}
+function fmt(n){return String(Math.round(n*100)/100)}
+function parseDate(v){
+ const s=String(v??'').trim();
+ let m=s.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/);
+ if(m)return Date.UTC(+m[1],+m[2]-1,+m[3]);
+ m=s.match(/^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{4})/);
+ return m?Date.UTC(+m[3],+m[2]-1,+m[1]):null;
+}
+function allNum(vals){const v=vals.filter(x=>String(x??'').trim()!=='');return v.length>0&&v.every(x=>Number.isFinite(num(x)))}
+function isNumCol(d,c){return allNum(d.rows.map(r=>r[c]))}
+function isDateCol(d,c){const v=d.rows.map(r=>r[c]).filter(x=>String(x??'').trim()!=='');return v.length>0&&v.every(x=>parseDate(x)!==null)}
+function cmp(a,b){
+ const x=num(a),y=num(b);if(Number.isFinite(x)&&Number.isFinite(y))return x-y;
+ const p=parseDate(a),q=parseDate(b);if(p!==null&&q!==null)return p-q;
+ return String(a??'').localeCompare(String(b??''),'ar',{numeric:true});
+}
+function periodKey(ms,p){const t=new Date(ms),y=t.getUTCFullYear(),m=String(t.getUTCMonth()+1).padStart(2,'0'),d=String(t.getUTCDate()).padStart(2,'0');return p==='year'?String(y):p==='day'?y+'-'+m+'-'+d:y+'-'+m}
+function aggLabel(r){return r.aggFn==='count'||!r.aggCol?null:aggNames[r.aggFn]+' '+r.aggCol}
+function outCols(r){
+ if(r.type==='totals')return ['العمود','عدد القيم','المجموع','المتوسط','الأدنى','الأعلى'];
+ const lab=aggLabel(r);
+ if(r.type==='grouped')return [r.groupCol||'المجموعة','عدد السجلات'].concat(lab?[lab]:[]);
+ if(r.type==='timeline')return ['الفترة','عدد السجلات'].concat(lab?[lab]:[]);
+ return r.type==='ranking'?['#'].concat(r.columns):r.columns.slice();
+}
+function aggregate(vals,fn){
+ const n=vals.map(num).filter(Number.isFinite);if(!n.length)return '';
+ const s=n.reduce((a,b)=>a+b,0);
+ return fmt(fn==='sum'?s:fn==='avg'?s/n.length:fn==='min'?Math.min(...n):Math.max(...n));
+}
+function testFilter(row,f){
+ const v=String(row[f.col]??''),a=v.toLowerCase(),b=String(f.value??'').toLowerCase();
+ if(f.op==='empty')return v.trim()==='';
+ if(f.op==='filled')return v.trim()!=='';
+ if(f.op==='equals')return a===b;
+ if(f.op==='not')return a!==b;
+ if(f.op==='starts')return a.startsWith(b);
+ if(['gt','gte','lt','lte'].includes(f.op)){if(v.trim()==='')return false;const c=cmp(v,f.value);return f.op==='gt'?c>0:f.op==='gte'?c>=0:f.op==='lt'?c<0:c<=0}
+ return a.includes(b);
+}
+function footerRow(r,cols,out,lab){
+ if(!r.showTotals||!out.length)return null;
+ const agg=r.type==='grouped'||r.type==='timeline',f={};
+ cols.forEach((c,i)=>{
+  if(i===0){f[c]='الإجمالي';return}
+  const ok=agg?c==='عدد السجلات'||(c===lab&&r.aggFn==='sum'):c!=='#'&&allNum(out.map(x=>x[c]));
+  f[c]=ok?fmt(out.reduce((s,x)=>s+(num(x[c])||0),0)):'';
+ });
+ return f;
+}
+function compute(r,d){
+ const q=r.search.trim().toLowerCase(),from=r.dateFrom?Date.parse(r.dateFrom):null,to=r.dateTo?Date.parse(r.dateTo):null;
+ const fs=r.filters.filter(f=>f.col&&(f.op==='empty'||f.op==='filled'||f.value!==''));
+ const rows=d.rows.filter(row=>{
+  if(q&&!d.columns.some(c=>String(row[c]??'').toLowerCase().includes(q)))return false;
+  if(r.dateCol&&(from!==null||to!==null)){const t=parseDate(row[r.dateCol]);if(t===null)return false;if(from!==null&&t<from)return false;if(to!==null&&t>to)return false}
+  if(!fs.length)return true;
+  return r.match==='any'?fs.some(f=>testFilter(row,f)):fs.every(f=>testFilter(row,f));
+ });
+ const cols=outCols(r),lab=aggLabel(r),limit=parseInt(r.limit,10)>0?parseInt(r.limit,10):0;
+ if(r.type==='totals'){
+  return {cols,footer:null,rows:r.columns.map(c=>{
+   const vals=rows.map(x=>x[c]).filter(v=>String(v??'').trim()!==''),n=vals.map(num).filter(Number.isFinite);
+   const o={'العمود':c,'عدد القيم':vals.length,'المجموع':'—','المتوسط':'—','الأدنى':'—','الأعلى':'—'};
+   if(n.length&&n.length===vals.length){const s=n.reduce((a,b)=>a+b,0);o['المجموع']=fmt(s);o['المتوسط']=fmt(s/n.length);o['الأدنى']=fmt(Math.min(...n));o['الأعلى']=fmt(Math.max(...n))}
+   return o;
+  })};
+ }
+ let out;
+ if(r.type==='grouped'||r.type==='timeline'){
+  const map=new Map();
+  rows.forEach(x=>{
+   let k;
+   if(r.type==='grouped')k=String(x[r.groupCol]??'').trim()||'(بدون قيمة)';
+   else{const t=parseDate(x[r.dateCol]);if(t===null)return;k=periodKey(t,r.period)}
+   if(!map.has(k))map.set(k,[]);map.get(k).push(x);
+  });
+  out=[...map.entries()].map(([k,g])=>{const o={};o[cols[0]]=k;o['عدد السجلات']=g.length;if(lab)o[lab]=aggregate(g.map(x=>x[r.aggCol]),r.aggFn);return o});
+  if(r.type==='timeline')out.sort((a,b)=>String(a[cols[0]]).localeCompare(String(b[cols[0]])));
+ }else out=rows.slice();
+ const sortable=r.type==='list'||r.type==='ranking'?d.columns:cols;
+ if(r.sortCol&&sortable.includes(r.sortCol))out.sort((a,b)=>cmp(a[r.sortCol],b[r.sortCol])*(r.sortDir==='desc'?-1:1));
+ if(limit)out=out.slice(0,limit);
+ if(r.type==='ranking')out=out.map((x,i)=>({...x,'#':i+1}));
+ return {cols,rows:out,footer:footerRow(r,cols,out,lab)};
+}
+function validateDraft(){
+ const t=draft.type;
+ if(['list','ranking','totals'].includes(t)&&!draft.columns.length)return 'اختر عمودًا واحدًا على الأقل';
+ if(t==='ranking'&&!draft.sortCol)return 'اختر عمود الترتيب لتقرير الترتيب';
+ if(t==='grouped'&&!draft.groupCol)return 'اختر عمود التجميع';
+ if(t==='timeline'&&!draft.dateCol)return 'اختر عمود التاريخ للتحليل الزمني';
+ if((t==='grouped'||t==='timeline')&&draft.aggFn!=='count'&&!draft.aggCol)return 'اختر عمود القيمة المراد حسابها أو اجعل العملية العدد';
+ return '';
+}
+function autoPick(){
+ const d=db.datasets.find(x=>x.id===draft.datasetId);if(!d)return;
+ const nums=d.columns.filter(c=>isNumCol(d,c)),dates=d.columns.filter(c=>isDateCol(d,c));
+ if(!d.columns.includes(draft.aggCol))draft.aggCol=nums[0]||'';
+ if(!nums.length)draft.aggFn='count';
+ if(draft.type==='timeline'&&!d.columns.includes(draft.dateCol))draft.dateCol=dates[0]||'';
+ if(draft.type==='ranking'&&!d.columns.includes(draft.sortCol))draft.sortCol=nums[0]||'';
+ if(draft.type==='grouped'&&!d.columns.includes(draft.groupCol)){
+  let best='',bestN=Infinity;
+  d.columns.forEach(c=>{if(nums.includes(c)||dates.includes(c))return;const n=new Set(d.rows.map(x=>String(x[c]??''))).size;if(n&&n<bestN){best=c;bestN=n}});
+  draft.groupCol=best;
+ }
+}
+function switchDataset(id){
+ draft.datasetId=id;const d=db.datasets.find(x=>x.id===id);
+ draft.columns=d?d.columns.slice():[];draft.filters=[];draft.groupCol='';draft.aggCol='';draft.dateCol='';draft.sortCol='';draft.search='';
+ autoPick();
+}
+function opts(list,sel,blank){return (blank?'<option value="">'+blank+'</option>':'')+list.map(c=>'<option value="'+esc(c)+'" '+(c===sel?'selected':'')+'>'+esc(c)+'</option>').join('')}
+function optsMap(map,sel){return Object.keys(map).map(k=>'<option value="'+k+'" '+(k===sel?'selected':'')+'>'+esc(map[k])+'</option>').join('')}
+function shown(){
+ if(lastRows.length&&lastCols)return {cols:lastCols,rows:lastRows,footer:lastFooter};
+ const d=draft&&db.datasets.find(x=>x.id===draft.datasetId);
+ return {cols:d?outCols(draft):[],rows:[],footer:null};
+}
+function applyReportFilters(){
+ const q=($('#report-search')?.value||'').toLowerCase(),s=$('#report-section')?.value||'',t=$('#report-type')?.value||'';
+ document.querySelectorAll('#report-rows tr[data-section]').forEach(r=>r.style.display=(!q||r.textContent.toLowerCase().includes(q))&&(!s||r.dataset.section===s)&&(!t||r.dataset.type===t)?'':'none');
+}
 function makeDraft(template){
  const type=template&&template.sourceType||'sales';
  let ds=db.datasets.find(x=>x.sourceType===type)||db.datasets[0];
@@ -255,7 +403,7 @@ function makeDraft(template){
   db.datasets.unshift(ds);persist();
  }
  if(!ds)ds={id:'',name:'',columns:[],rows:[]};
- return {id:null,name:template?template.name:'',datasetId:ds.id,columns:template?template.columns.filter(c=>ds.columns.includes(c)):ds.columns.slice(),filterCol:'',filterOp:'contains',filterValue:'',sortCol:'',sortDir:'asc',status:'draft',favorite:false,sharedWith:[]};
+ return reportDefaults({id:null,name:template?template.name:'',datasetId:ds.id,section:ds.sourceType||'all',columns:template?template.columns.filter(c=>ds.columns.includes(c)):ds.columns.slice(),status:'draft',favorite:false,sharedWith:[]},db.datasets);
 }
 function setActiveNav(){
  document.querySelectorAll('[data-page]').forEach(b=>{
@@ -275,8 +423,8 @@ function go(p,opts){
 function head(title,sub){$('#page-title').textContent=title;return '<div class="muted" style="margin-bottom:14px">'+sub+'</div>'}
 function emptyRow(cols,msg){return '<tr><td colspan="'+cols+'" class="empty">'+msg+'</td></tr>'}
 function reportRows(items){
- if(!items.length)return emptyRow(6,'لا توجد تقارير في هذا القسم حتى الآن.');
- return items.map(r=>'<tr><td style="font-weight:700">'+esc(r.name)+'</td><td>'+esc(r.datasetName||'—')+'</td><td>'+r.columns.length+'</td><td><span class="pill">'+(r.status==='published'?'منشور':'مسودة')+'</span></td><td>'+esc(new Date(r.updated).toLocaleString('ar-EG'))+'</td><td><div class="actions">'+
+ if(!items.length)return emptyRow(7,'لا توجد تقارير في هذا القسم حتى الآن.');
+ return items.map(r=>'<tr data-section="'+esc(r.section)+'" data-type="'+esc(r.type)+'"><td style="font-weight:700">'+esc(r.name)+(r.description?'<div class="muted" style="max-width:240px;overflow:hidden;text-overflow:ellipsis">'+esc(r.description)+'</div>':'')+'</td><td>'+esc(sectionNames[r.section]||'—')+'</td><td><span class="pill">'+esc(reportTypes[r.type]||reportTypes.list)+'</span></td><td>'+esc(r.datasetName||'—')+'</td><td><span class="pill">'+(r.status==='published'?'منشور':'مسودة')+'</span></td><td>'+esc(new Date(r.updated).toLocaleString('ar-EG'))+'</td><td><div class="actions">'+
  '<button class="btn small" data-act="edit" data-id="'+esc(r.id)+'">فتح</button>'+
  '<button class="btn small" data-act="execute" data-id="'+esc(r.id)+'">تشغيل</button>'+
  '<button class="btn small" data-act="toggle-publish" data-id="'+esc(r.id)+'">'+(r.status==='published'?'إلغاء النشر':'نشر')+'</button>'+
@@ -286,7 +434,8 @@ function reportRows(items){
  '</div></td></tr>').join('');
 }
 function reportList(title,sub,items){
- return head(title,sub)+'<div class="card pad"><div class="row"><div class="field"><label>بحث في التقارير</label><input id="report-search" placeholder="اسم التقرير أو مصدر البيانات"></div><button class="btn primary" data-act="new">＋ تقرير جديد</button></div></div><div class="card table-wrap"><table><thead><tr><th>اسم التقرير</th><th>مصدر البيانات</th><th>الأعمدة</th><th>الحالة</th><th>آخر تعديل</th><th>إجراءات</th></tr></thead><tbody id="report-rows">'+reportRows(items)+'</tbody></table></div>';
+ const secOpts='<option value="">كل الأقسام</option>'+Object.keys(sectionNames).filter(k=>k!=='all').map(k=>'<option value="'+k+'">'+sectionNames[k]+'</option>').join('');
+ return head(title,sub)+'<div class="card pad"><div class="row"><div class="field"><label>بحث في التقارير</label><input id="report-search" placeholder="اسم التقرير أو مصدر البيانات"></div><div class="field"><label>القسم</label><select id="report-section">'+secOpts+'</select></div><div class="field"><label>نوع التقرير</label><select id="report-type"><option value="">كل الأنواع</option>'+optsMap(reportTypes,'')+'</select></div><button class="btn primary" data-act="new">＋ تقرير جديد</button></div></div><div class="card table-wrap"><table><thead><tr><th>اسم التقرير</th><th>القسم</th><th>النوع</th><th>مصدر البيانات</th><th>الحالة</th><th>آخر تعديل</th><th>إجراءات</th></tr></thead><tbody id="report-rows">'+reportRows(items)+'</tbody></table></div>';
 }
 function home(){
  const now=new Date(),range=homeRange||7,rangeMs=range*86400000,start=new Date(now.getTime()-rangeMs);
@@ -307,7 +456,7 @@ function home(){
  const recentLogs=db.runLog.slice(0,4);
  const activityHtml=recentLogs.length?recentLogs.map(x=>'<div class="home-activity-item"><span class="home-activity-icon">↗</span><div class="home-activity-copy"><b>'+esc(x.reportName||'تقرير غير مسمى')+'</b><span>تشغيل '+esc(x.datasetName||'مصدر محلي')+' · '+Number(x.rowCount||0)+' نتيجة</span></div><time>'+esc(new Date(x.at).toLocaleDateString('ar-EG',{day:'numeric',month:'short'}))+'</time></div>').join(''):'<div class="home-empty-inline"><span>◷</span><b>لا توجد عمليات تشغيل بعد</b><small>عند تشغيل أول تقرير سيظهر سجل النشاط هنا.</small></div>';
  const recentReports=db.reports.slice().sort((a,b)=>Date.parse(b.updated||0)-Date.parse(a.updated||0)).slice(0,4);
- const reportsHtml=recentReports.length?recentReports.map(r=>'<div class="home-report-item"><span class="home-report-mark">▤</span><div class="home-report-copy"><b>'+esc(r.name)+'</b><small>'+esc(r.datasetName||'مصدر بيانات')+'</small></div><span class="home-status '+(r.status==='published'?'is-published':'is-draft')+'">'+(r.status==='published'?'منشور':'مسودة')+'</span><button class="home-open-link" data-act="edit" data-id="'+esc(r.id)+'">فتح</button></div>').join(''):'<div class="home-empty-inline"><span>▤</span><b>مساحة التقارير جاهزة للبدء</b><small>أنشئ تقريرك الأول وسيظهر هنا مع حالته وآخر تعديل.</small><button class="btn primary" data-act="new">إنشاء أول تقرير</button></div>';
+ const reportsHtml=recentReports.length?recentReports.map(r=>'<div class="home-report-item"><span class="home-report-mark">▤</span><div class="home-report-copy"><b>'+esc(r.name)+'</b><small>'+esc(sectionNames[r.section]||'')+' · '+esc(reportTypes[r.type]||reportTypes.list)+' · '+esc(r.datasetName||'مصدر بيانات')+'</small></div><span class="home-status '+(r.status==='published'?'is-published':'is-draft')+'">'+(r.status==='published'?'منشور':'مسودة')+'</span><button class="home-open-link" data-act="edit" data-id="'+esc(r.id)+'">فتح</button></div>').join(''):'<div class="home-empty-inline"><span>▤</span><b>مساحة التقارير جاهزة للبدء</b><small>أنشئ تقريرك الأول وسيظهر هنا مع حالته وآخر تعديل.</small><button class="btn primary" data-act="new">إنشاء أول تقرير</button></div>';
  const sourceList=db.datasets.slice(0,4);
  const sourceHtml=sourceList.map(d=>'<button class="home-source-item" data-page="'+(['sales','purchases','stock','partners'].includes(d.sourceType)?'source-'+d.sourceType:'datasets')+'"><span class="home-source-icon">'+(d.sourceType==='sales'?'↗':d.sourceType==='purchases'?'↙':d.sourceType==='stock'?'◫':'◇')+'</span><span class="home-source-copy"><b>'+esc(d.name)+'</b><small>'+esc(sourceNames[d.sourceType]||'مصدر مخصص')+'</small></span><span class="home-source-count"><b>'+d.rows.length+'</b><small>سجل</small></span><span class="home-source-arrow">←</span></button>').join('');
  const sourceColors=['#6475F4','#13B88A','#E6A83B','#A78BFA'];
@@ -380,21 +529,39 @@ function datasetDetail(){
 }
 function builder(){
  if(!draft)draft=makeDraft();
- const d=db.datasets.find(x=>x.id===draft.datasetId);
- if(!d)return head('مصمم التقارير','اختر مصدر بيانات أولًا')+datasets('all');
- const columns=d.columns||[];
- return head(draft.id?'تعديل التقرير':'إنشاء تقرير','حدد مصدر البيانات والأعمدة وشروط التصفية ثم عاين النتائج واحفظ التقرير')+
+ reportDefaults(draft);
+ const t=draft.type,d=db.datasets.find(x=>x.id===draft.datasetId);
+ const noSource=!d&&!draft.datasetId&&db.datasets.length>0;
+ if(!d&&!noSource)return head('مصمم التقارير','اختر مصدر بيانات أولًا')+datasets('all');
+ const secOptions=Object.keys(sectionNames).map(k=>'<option value="'+k+'" '+(draft.section===k?'selected':'')+'>'+sectionNames[k]+' ('+db.datasets.filter(x=>k==='all'||x.sourceType===k).length+')</option>').join('');
+ const inSec=db.datasets.filter(x=>draft.section==='all'||x.sourceType===draft.section);
+ const dsOptions=inSec.length?inSec.map(x=>'<option value="'+esc(x.id)+'" '+(d&&x.id===d.id?'selected':'')+'>'+esc(x.name)+'</option>').join(''):'<option value="">لا توجد مصادر في هذا القسم</option>';
+ const columns=d?d.columns:[];
+ const top=head(draft.id?'تعديل التقرير':'إنشاء تقرير','حدد قسم التقرير ونوعه ومصدر البيانات ثم اضبط الأعمدة والشروط وعاين النتائج واحفظ التقرير')+
  '<div class="notice">البيانات والتقارير تحفظ داخل هذا المتصفح فقط. لا يتم إرسال محتوى إلى ERPNext.</div>'+
- '<div class="card pad"><div class="grid"><div class="field"><label>اسم التقرير</label><input id="draft-name" value="'+esc(draft.name)+'" placeholder="اسم واضح للتقرير"></div><div class="field"><label>مصدر البيانات</label><select id="draft-dataset">'+db.datasets.map(x=>'<option value="'+esc(x.id)+'" '+(x.id===d.id?'selected':'')+'>'+esc(x.name)+'</option>').join('')+'</select></div><div class="field"><label>حالة التقرير</label><select id="draft-status"><option value="draft" '+(draft.status!=='published'?'selected':'')+'>مسودة</option><option value="published" '+(draft.status==='published'?'selected':'')+'>منشور</option></select></div></div>'+
- '<h2 style="margin-top:20px">الأعمدة الظاهرة</h2><div class="grid">'+columns.map(c=>'<label class="check"><input type="checkbox" data-col="'+esc(c)+'" '+(draft.columns.includes(c)?'checked':'')+'> '+esc(c)+'</label>').join('')+'</div>'+
- '<h2 style="margin-top:20px">شروط التصفية والترتيب</h2><div class="grid"><div class="field"><label>العمود</label><select id="filter-col"><option value="">بدون فلتر</option>'+columns.map(c=>'<option value="'+esc(c)+'" '+(draft.filterCol===c?'selected':'')+'>'+esc(c)+'</option>').join('')+'</select></div><div class="field"><label>نوع المطابقة</label><select id="filter-op"><option value="contains" '+(draft.filterOp==='contains'?'selected':'')+'>يحتوي على</option><option value="equals" '+(draft.filterOp==='equals'?'selected':'')+'>يساوي</option><option value="not" '+(draft.filterOp==='not'?'selected':'')+'>لا يساوي</option></select></div><div class="field"><label>القيمة</label><input id="filter-value" value="'+esc(draft.filterValue||'')+'" placeholder="قيمة الفلتر"></div><div class="field"><label>ترتيب النتائج</label><select id="sort-col"><option value="">بدون ترتيب</option>'+columns.map(c=>'<option value="'+esc(c)+'" '+(draft.sortCol===c?'selected':'')+'>'+esc(c)+'</option>').join('')+'</select></div><div class="field"><label>الاتجاه</label><select id="sort-dir"><option value="asc" '+(draft.sortDir!=='desc'?'selected':'')+'>تصاعدي</option><option value="desc" '+(draft.sortDir==='desc'?'selected':'')+'>تنازلي</option></select></div></div>'+
+ '<div class="card pad"><div class="grid"><div class="field"><label>اسم التقرير</label><input id="draft-name" value="'+esc(draft.name)+'" placeholder="اسم واضح للتقرير"></div><div class="field"><label>قسم التقرير</label><select id="draft-section">'+secOptions+'</select></div><div class="field"><label>نوع التقرير</label><select id="draft-type">'+optsMap(reportTypes,t)+'</select></div><div class="field"><label>مصدر البيانات</label><select id="draft-dataset">'+dsOptions+'</select></div><div class="field"><label>حالة التقرير</label><select id="draft-status"><option value="draft" '+(draft.status!=='published'?'selected':'')+'>مسودة</option><option value="published" '+(draft.status==='published'?'selected':'')+'>منشور</option></select></div></div>'+
+ '<div class="field" style="margin-top:12px"><label>وصف التقرير (اختياري)</label><input id="draft-desc" value="'+esc(draft.description)+'" placeholder="وصف مختصر لغرض التقرير"></div>'+
+ '<p class="muted" style="margin-top:10px">'+typeHints[t]+'</p>';
+ if(noSource)return top+'<div class="empty">لا توجد مصادر بيانات في '+sectionNames[draft.section]+' بعد. أنشئ مصدرًا أو استورد ملف CSV أو JSON لهذا القسم ثم ارجع لتصميم التقرير.</div><div class="row"><button class="btn primary" data-page="'+(draft.section==='custom'?'datasets':'source-'+draft.section)+'">إنشاء مصدر بيانات لهذا القسم</button></div></div>';
+ if(!columns.length)return top+'<div class="empty">هذا المصدر لا يحتوي على أعمدة بعد. افتح المصدر وأضف الأعمدة والسجلات أولًا.</div><div class="row"><button class="btn primary" data-act="view-dataset" data-id="'+esc(d.id)+'">فتح المصدر وإضافة الأعمدة</button></div></div>';
+ const colsBlock=t==='grouped'||t==='timeline'?'':'<h2 style="margin-top:20px">'+(t==='totals'?'الأعمدة المطلوب حساب إجمالياتها':'الأعمدة الظاهرة')+'</h2><div class="row" style="margin-bottom:10px"><button class="btn small" data-act="cols-all">تحديد الكل</button><button class="btn small" data-act="cols-none">إلغاء الكل</button></div><div class="grid">'+columns.map(c=>'<label class="check"><input type="checkbox" data-col="'+esc(c)+'" '+(draft.columns.includes(c)?'checked':'')+'> '+esc(c)+'</label>').join('')+'</div>';
+ const aggBlock='<div class="field"><label>العملية الحسابية</label><select id="agg-fn">'+optsMap(aggNames,draft.aggFn)+'</select></div><div class="field"><label>عمود القيمة</label><select id="agg-col">'+opts(columns,draft.aggCol,'بدون')+'</select></div>';
+ const typeBlock=t==='grouped'?'<h2 style="margin-top:20px">إعدادات الملخص المجمّع</h2><div class="grid"><div class="field"><label>التجميع حسب</label><select id="group-col">'+opts(columns,draft.groupCol,'اختر العمود')+'</select></div>'+aggBlock+'</div>'
+  :t==='timeline'?'<h2 style="margin-top:20px">إعدادات التحليل الزمني</h2><div class="grid"><div class="field"><label>عمود التاريخ</label><select id="date-col">'+opts(columns,draft.dateCol,'اختر العمود')+'</select></div><div class="field"><label>الفترة</label><select id="period">'+optsMap(periodNames,draft.period)+'</select></div>'+aggBlock+'</div>':'';
+ const filterRows=draft.filters.map((f,i)=>'<div class="row" data-filter-row style="margin-bottom:10px"><div class="field"><label>العمود</label><select data-f="col">'+opts(columns,f.col,'اختر العمود')+'</select></div><div class="field"><label>نوع المطابقة</label><select data-f="op">'+optsMap(filterOps,f.op)+'</select></div><div class="field"><label>القيمة</label><input data-f="value" value="'+esc(f.value)+'" placeholder="قيمة الفلتر"></div><button class="btn small danger" data-act="remove-filter" data-i="'+i+'">حذف الشرط</button></div>').join('');
+ const dateSel=t==='timeline'?'':'<div class="field"><label>عمود التاريخ</label><select id="date-col">'+opts(columns,draft.dateCol,'بدون فلتر تاريخ')+'</select></div>';
+ const filterBlock='<h2 style="margin-top:20px">شروط التصفية</h2><div class="grid"><div class="field"><label>بحث نصي في كل الأعمدة</label><input id="search-text" value="'+esc(draft.search)+'" placeholder="كلمة أو رقم"></div><div class="field"><label>دمج الشروط</label><select id="filter-match"><option value="all" '+(draft.match==='all'?'selected':'')+'>تحقق جميع الشروط</option><option value="any" '+(draft.match==='any'?'selected':'')+'>تحقق أي شرط</option></select></div></div><div id="filters-box" style="margin-top:12px">'+(filterRows||'<p class="muted">لا توجد شروط مضافة. اضغط إضافة شرط لتصفية النتائج.</p>')+'</div><button class="btn small" data-act="add-filter">＋ إضافة شرط</button>'+
+ '<h2 style="margin-top:20px">الفترة الزمنية</h2><div class="grid">'+dateSel+'<div class="field"><label>من تاريخ</label><input type="date" id="date-from" value="'+esc(draft.dateFrom)+'"></div><div class="field"><label>إلى تاريخ</label><input type="date" id="date-to" value="'+esc(draft.dateTo)+'"></div></div>';
+ const sortBlock=t==='totals'?'':'<h2 style="margin-top:20px">الترتيب والعرض</h2><div class="grid"><div class="field"><label>'+(t==='ranking'?'ترتيب حسب (مطلوب)':'ترتيب النتائج')+'</label><select id="sort-col">'+opts(t==='list'||t==='ranking'?columns:outCols(draft),draft.sortCol,t==='ranking'?'اختر العمود':'بدون ترتيب')+'</select></div><div class="field"><label>الاتجاه</label><select id="sort-dir"><option value="asc" '+(draft.sortDir==='asc'?'selected':'')+'>تصاعدي</option><option value="desc" '+(draft.sortDir==='desc'?'selected':'')+'>تنازلي</option></select></div><div class="field"><label>'+(t==='ranking'?'عدد النتائج (أعلى / أقل)':'الحد الأقصى للسجلات')+'</label><input id="row-limit" type="number" min="1" value="'+esc(draft.limit)+'" placeholder="بدون حد"></div><label class="check" style="align-self:end"><input type="checkbox" id="show-totals" '+(draft.showTotals?'checked':'')+'> إضافة صف الإجمالي</label></div>';
+ const s=shown();
+ return top+colsBlock+typeBlock+filterBlock+sortBlock+
  '<div class="row" style="margin-top:18px"><button class="btn primary" data-act="preview">معاينة التقرير</button><button class="btn gold" data-act="run">تشغيل التقرير</button><button class="btn" data-act="save">حفظ التقرير</button><button class="btn" data-act="back">رجوع</button></div></div>'+
- '<div class="card"><div class="pad"><div class="row" style="justify-content:space-between;align-items:center"><h2>نتائج المعاينة والتشغيل</h2><span class="pill">'+lastRows.length+' سجل</span></div></div><div class="table-wrap" id="result-table">'+resultTable(lastRows,draft.columns)+'</div><div class="footer"><button class="btn small" data-act="export-csv">تصدير CSV</button><button class="btn small" data-act="export-json">تصدير JSON</button><button class="btn small" data-act="print">طباعة التقرير</button></div></div>';
+ '<div class="card"><div class="pad"><div class="row" style="justify-content:space-between;align-items:center"><h2>نتائج المعاينة والتشغيل</h2><div class="actions"><span class="pill">'+esc(reportTypes[t])+'</span><span class="pill">'+s.rows.length+' سجل</span></div></div></div><div class="table-wrap" id="result-table">'+resultTable(s.rows,s.cols,s.footer)+'</div><div class="footer"><button class="btn small" data-act="export-csv">تصدير CSV</button><button class="btn small" data-act="export-json">تصدير JSON</button><button class="btn small" data-act="print">طباعة التقرير</button></div></div>';
 }
-function resultTable(rows,cols){return '<table><thead><tr>'+cols.map(c=>'<th>'+esc(c)+'</th>').join('')+'</tr></thead><tbody>'+(rows.map(r=>'<tr>'+cols.map(c=>'<td>'+esc(r[c])+'</td>').join('')+'</tr>').join('')||emptyRow(Math.max(cols.length,1),'لا توجد نتائج. تحقق من الفلاتر أو أضف بيانات للمصدر.'))+'</tbody></table>'}
+function resultTable(rows,cols,footer){return '<table><thead><tr>'+cols.map(c=>'<th>'+esc(c)+'</th>').join('')+'</tr></thead><tbody>'+(rows.map(r=>'<tr>'+cols.map(c=>'<td>'+esc(r[c])+'</td>').join('')+'</tr>').join('')||emptyRow(Math.max(cols.length,1),'لا توجد نتائج. تحقق من الفلاتر أو أضف بيانات للمصدر.'))+(footer?'<tr style="font-weight:800;background:#F3F6FB">'+cols.map(c=>'<td>'+esc(footer[c])+'</td>').join('')+'</tr>':'')+'</tbody></table>'}
 function runlog(){
- const rows=db.runLog.map(x=>'<tr><td>'+esc(x.reportName)+'</td><td>'+esc(x.datasetName||'—')+'</td><td>'+x.rowCount+'</td><td>'+esc(new Date(x.at).toLocaleString('ar-EG'))+'</td><td><span class="pill">'+esc(x.outcome||'نجاح')+'</span></td></tr>').join('')||emptyRow(5,'لم يتم تشغيل أي تقرير بعد. افتح تقريرًا واضغط تشغيل التقرير.');
- return head('سجل التشغيل','سجل محلي لعمليات تشغيل التقارير')+'<div class="card table-wrap"><table><thead><tr><th>التقرير</th><th>مصدر البيانات</th><th>عدد النتائج</th><th>وقت التشغيل</th><th>الحالة</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+ const rows=db.runLog.map(x=>'<tr><td>'+esc(x.reportName)+'</td><td>'+esc(reportTypes[x.reportType]||reportTypes.list)+'</td><td>'+esc(x.datasetName||'—')+'</td><td>'+x.rowCount+'</td><td>'+esc(new Date(x.at).toLocaleString('ar-EG'))+'</td><td><span class="pill">'+esc(x.outcome||'نجاح')+'</span></td></tr>').join('')||emptyRow(6,'لم يتم تشغيل أي تقرير بعد. افتح تقريرًا واضغط تشغيل التقرير.');
+ return head('سجل التشغيل','سجل محلي لعمليات تشغيل التقارير')+'<div class="card table-wrap"><table><thead><tr><th>التقرير</th><th>النوع</th><th>مصدر البيانات</th><th>عدد النتائج</th><th>وقت التشغيل</th><th>الحالة</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
 }
 function settingsView(kind){
  const isPermissions=kind==='permissions',defs=isPermissions?permissionDefs:accessDefs;
@@ -405,8 +572,8 @@ function settingsView(kind){
  '<div class="card pad"><div class="grid">'+defs.map(x=>'<label class="check"><input type="checkbox" data-setting="'+x[0]+'" '+(store[x[0]]?'checked':'')+'> '+x[1]+'</label>').join('')+'</div><div class="row" style="margin-top:18px"><button class="btn primary" data-act="'+act+'">حفظ الإعدادات</button><button class="btn" data-act="select-all-settings">تحديد/إلغاء الكل</button></div><p class="muted" style="margin-top:12px">هذه إعدادات واجهة محلية لهذا المتصفح، ولا تنشئ صلاحيات خادم أو مستخدمين في ERPNext.</p></div>';
 }
 function versions(){
- const rows=db.versions.map(v=>'<tr><td>'+esc(v.reportName)+'</td><td>'+esc(new Date(v.at).toLocaleString('ar-EG'))+'</td><td>'+((v.snapshot&&v.snapshot.columns)||[]).length+'</td><td><button class="btn small" data-act="open-version" data-id="'+esc(v.id)+'">فتح كنسخة جديدة</button></td></tr>').join('')||emptyRow(4,'ستظهر نسخ التقارير هنا عند حفظ أي تقرير.');
- return head('إصدارات التقارير','سجل محلي لنسخ التقارير التي تم حفظها')+'<div class="card table-wrap"><table><thead><tr><th>التقرير</th><th>تاريخ الإصدار</th><th>الأعمدة</th><th>إجراء</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+ const rows=db.versions.map(v=>'<tr><td>'+esc(v.reportName)+'</td><td>'+esc(reportTypes[v.snapshot&&v.snapshot.type]||reportTypes.list)+'</td><td>'+esc(new Date(v.at).toLocaleString('ar-EG'))+'</td><td>'+((v.snapshot&&v.snapshot.columns)||[]).length+'</td><td><button class="btn small" data-act="open-version" data-id="'+esc(v.id)+'">فتح كنسخة جديدة</button></td></tr>').join('')||emptyRow(5,'ستظهر نسخ التقارير هنا عند حفظ أي تقرير.');
+ return head('إصدارات التقارير','سجل محلي لنسخ التقارير التي تم حفظها')+'<div class="card table-wrap"><table><thead><tr><th>التقرير</th><th>النوع</th><th>تاريخ الإصدار</th><th>الأعمدة</th><th>إجراء</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
 }
 function schedules(){
  const rows=db.schedules.map(x=>'<tr><td>'+esc(x.name)+'</td><td>'+esc(x.frequency)+'</td><td>'+esc(x.time)+'</td><td>'+(x.enabled?'مفعّل':'متوقف')+'</td><td><div class="actions"><button class="btn small" data-act="toggle-schedule" data-id="'+esc(x.id)+'">'+(x.enabled?'إيقاف':'تفعيل')+'</button><button class="btn small danger" data-act="delete-schedule" data-id="'+esc(x.id)+'">حذف</button></div></td></tr>').join('')||emptyRow(5,'لم تتم إضافة أي جدولة محلية.');
@@ -430,35 +597,29 @@ function render(){
 function newDraft(){draft=makeDraft();lastRows=[];go('builder')}
 function openReport(id,execute){
  const r=db.reports.find(x=>x.id===id);if(!r)return;
- draft={...r,columns:r.columns.slice(),sharedWith:(r.sharedWith||[]).slice()};
+ draft={...r,columns:r.columns.slice(),filters:(r.filters||[]).map(f=>({...f})),sharedWith:(r.sharedWith||[]).slice()};
  lastRows=[];go('builder');
  if(execute)setTimeout(()=>run(true),0);
 }
 function syncDraftFromForm(){
  if(!draft)return;
- if($('#draft-name'))draft.name=$('#draft-name').value;
- if($('#draft-dataset'))draft.datasetId=$('#draft-dataset').value;
+ const val=(id,key)=>{const el=$('#'+id);if(el)draft[key]=el.value};
+ val('draft-name','name');val('draft-desc','description');val('draft-section','section');val('draft-dataset','datasetId');val('draft-type','type');val('draft-status','status');
  if(document.querySelector('[data-col]'))draft.columns=[...document.querySelectorAll('[data-col]:checked')].map(x=>x.dataset.col);
- if($('#filter-col'))draft.filterCol=$('#filter-col').value;
- if($('#filter-op'))draft.filterOp=$('#filter-op').value;
- if($('#filter-value'))draft.filterValue=$('#filter-value').value;
- if($('#sort-col'))draft.sortCol=$('#sort-col').value;
- if($('#sort-dir'))draft.sortDir=$('#sort-dir').value;
- if($('#draft-status'))draft.status=$('#draft-status').value;
+ if($('#filters-box'))draft.filters=[...document.querySelectorAll('[data-filter-row]')].map(row=>({col:row.querySelector('[data-f="col"]').value,op:row.querySelector('[data-f="op"]').value,value:row.querySelector('[data-f="value"]').value}));
+ val('filter-match','match');val('search-text','search');val('date-col','dateCol');val('date-from','dateFrom');val('date-to','dateTo');
+ val('group-col','groupCol');val('agg-fn','aggFn');val('agg-col','aggCol');val('period','period');
+ val('sort-col','sortCol');val('sort-dir','sortDir');val('row-limit','limit');
+ if($('#show-totals'))draft.showTotals=$('#show-totals').checked;
 }
 function run(recordRun){
  if(!draft)return;
  syncDraftFromForm();
- if(!draft.columns.length){alert('اختر عمودًا واحدًا على الأقل');return}
+ const err=validateDraft();if(err){alert(err);return}
  const d=db.datasets.find(x=>x.id===draft.datasetId);if(!d){alert('مصدر البيانات غير موجود');return}
- lastRows=d.rows.filter(row=>{
-  if(!draft.filterCol||!draft.filterValue)return true;
-  const v=String(row[draft.filterCol]??'');
-  return draft.filterOp==='equals'?v===draft.filterValue:draft.filterOp==='not'?v!==draft.filterValue:v.toLowerCase().includes(draft.filterValue.toLowerCase());
- });
- if(draft.sortCol)lastRows.sort((a,b)=>String(a[draft.sortCol]??'').localeCompare(String(b[draft.sortCol]??''),'ar',{numeric:true})*(draft.sortDir==='desc'?-1:1));
+ const out=compute(draft,d);lastRows=out.rows;lastCols=out.cols;lastFooter=out.footer;
  if(recordRun!==false){
-  db.runLog.unshift({id:uid(),reportId:draft.id||null,reportName:draft.name||'تقرير غير محفوظ',datasetName:d.name,rowCount:lastRows.length,at:new Date().toISOString(),outcome:'نجاح'});
+  db.runLog.unshift({id:uid(),reportId:draft.id||null,reportName:draft.name||'تقرير غير محفوظ',reportType:draft.type,datasetName:d.name,rowCount:lastRows.length,at:new Date().toISOString(),outcome:'نجاح'});
   db.runLog=db.runLog.slice(0,500);persist();
  }
  render();
@@ -467,9 +628,9 @@ function save(){
  if(!draft)return;
  syncDraftFromForm();
  if(!draft.name.trim()){alert('أدخل اسم التقرير');return}
- if(!draft.columns.length){alert('اختر الأعمدة');return}
+ const err=validateDraft();if(err){alert(err);return}
  const d=db.datasets.find(x=>x.id===draft.datasetId);if(!d){alert('اختر مصدر بيانات صالحًا');return}
- const item={id:draft.id||uid(),name:draft.name.trim(),datasetId:d.id,datasetName:d.name,columns:draft.columns.slice(),filterCol:draft.filterCol,filterOp:draft.filterOp,filterValue:draft.filterValue,sortCol:draft.sortCol,sortDir:draft.sortDir,status:draft.status||'draft',favorite:!!draft.favorite,sharedWith:draft.sharedWith||[],updated:new Date().toISOString()};
+ const item={...draft,id:draft.id||uid(),name:draft.name.trim(),description:draft.description.trim(),section:draft.section==='all'?d.sourceType:draft.section,datasetId:d.id,datasetName:d.name,columns:draft.columns.slice(),filters:draft.filters.filter(f=>f.col).map(f=>({...f})),status:draft.status||'draft',favorite:!!draft.favorite,sharedWith:draft.sharedWith||[],updated:new Date().toISOString()};
  const i=db.reports.findIndex(x=>x.id===item.id);if(i<0)db.reports.unshift(item);else db.reports[i]=item;
  db.versions.unshift({id:uid(),reportId:item.id,reportName:item.name,at:item.updated,snapshot:JSON.parse(JSON.stringify(item))});
  db.versions=db.versions.slice(0,300);
@@ -519,6 +680,9 @@ document.addEventListener('click',e=>{
  if(a==='back')go('datasets');
  if(a==='preview')run(false);
  if(a==='run')run(true);
+ if(a==='add-filter'){syncDraftFromForm();const d=db.datasets.find(x=>x.id===draft.datasetId);draft.filters=draft.filters.concat([{col:d&&d.columns[0]||'',op:'contains',value:''}]);render();}
+ if(a==='remove-filter'){syncDraftFromForm();draft.filters=draft.filters.filter((x,i)=>i!==Number(b.dataset.i));render();}
+ if(a==='cols-all'||a==='cols-none'){syncDraftFromForm();const d=db.datasets.find(x=>x.id===draft.datasetId);draft.columns=a==='cols-all'&&d?d.columns.slice():[];render();}
  if(a==='save')save();
  if(a==='delete-report'){
   if(confirm('حذف التقرير نهائيًا من مساحة هذا المتصفح؟')){db.reports=db.reports.filter(x=>x.id!==id);db.versions=db.versions.filter(x=>x.reportId!==id);persist();render();}
@@ -570,7 +734,7 @@ document.addEventListener('click',e=>{
   const boxes=[...document.querySelectorAll('[data-setting]')],turnOn=!boxes.every(x=>x.checked);boxes.forEach(x=>x.checked=turnOn);
  }
  if(a==='open-version'){
-  const v=db.versions.find(x=>x.id===id);if(v&&v.snapshot){draft={...v.snapshot,id:null,name:v.snapshot.name+' — نسخة جديدة',status:'draft',favorite:false,sharedWith:[]};lastRows=[];go('builder');}
+  const v=db.versions.find(x=>x.id===id);if(v&&v.snapshot){draft={...JSON.parse(JSON.stringify(v.snapshot)),id:null,name:v.snapshot.name+' — نسخة جديدة',status:'draft',favorite:false,sharedWith:[]};lastRows=[];go('builder');}
  }
  if(a==='add-schedule'){
   const reportId=$('#schedule-report')?.value,name=$('#schedule-name')?.value.trim(),report=db.reports.find(x=>x.id===reportId);
@@ -580,22 +744,31 @@ document.addEventListener('click',e=>{
  }
  if(a==='toggle-schedule'){const s=db.schedules.find(x=>x.id===id);if(s){s.enabled=!s.enabled;persist();render();}}
  if(a==='delete-schedule'){db.schedules=db.schedules.filter(x=>x.id!==id);persist();render();}
- if(a==='export-csv'&&draft)download((draft.name||'report')+'.csv',csv(lastRows,draft.columns),'text/csv;charset=utf-8');
- if(a==='export-json'&&draft)download((draft.name||'report')+'.json',JSON.stringify({name:draft.name,columns:draft.columns,rows:lastRows},null,2),'application/json');
+ if(a==='export-csv'&&draft){const s=shown();download((draft.name||'report')+'.csv',csv(s.footer?s.rows.concat([s.footer]):s.rows,s.cols),'text/csv;charset=utf-8');}
+ if(a==='export-json'&&draft){const s=shown();download((draft.name||'report')+'.json',JSON.stringify({name:draft.name,section:draft.section,type:draft.type,columns:s.cols,rows:s.rows},null,2),'application/json');}
  if(a==='print')window.print();
  if(a==='backup')download('nds-report-studio-backup.json',JSON.stringify(db,null,2),'application/json');
 });
 document.addEventListener('change',e=>{
- if(e.target.id==='draft-dataset'){
-  draft.datasetId=e.target.value;const d=db.datasets.find(x=>x.id===draft.datasetId);draft.columns=d.columns.slice();lastRows=[];render();
+ if(e.target.id==='draft-section'){
+  syncDraftFromForm();
+  if(!db.datasets.some(x=>x.id===draft.datasetId&&(draft.section==='all'||x.sourceType===draft.section))){const f=db.datasets.find(x=>draft.section==='all'||x.sourceType===draft.section);switchDataset(f?f.id:'')}
+  lastRows=[];render();
  }
+ if(e.target.id==='draft-dataset'){syncDraftFromForm();switchDataset(draft.datasetId);lastRows=[];render();}
+ if(e.target.id==='draft-type'){
+  const prev=draft.type;syncDraftFromForm();
+  if(draft.type==='ranking'&&prev!=='ranking'){draft.sortDir='desc';if(!draft.limit)draft.limit='10'}
+  autoPick();lastRows=[];render();
+ }
+ if(e.target.id==='report-section'||e.target.id==='report-type')applyReportFilters();
  if(e.target.id==='data-file'&&e.target.files[0])importFile(e.target.files[0]).catch(err=>alert('تعذر استيراد الملف: '+err.message));
  if(e.target.id==='restore-file'&&e.target.files[0]){
   e.target.files[0].text().then(t=>{const x=JSON.parse(t);if(!Array.isArray(x.reports)||!Array.isArray(x.datasets))throw Error('نسخة غير صالحة');if(confirm('استبدال مساحة العمل الحالية بالنسخة المستوردة؟')){db=normalize(x);persist();draft=null;go('home');}}).catch(err=>alert('فشل الاستعادة: '+err.message));
  }
 });
 document.addEventListener('input',e=>{
- if(e.target.id==='report-search'){const q=e.target.value.toLowerCase();document.querySelectorAll('#report-rows tr').forEach(r=>r.style.display=r.textContent.toLowerCase().includes(q)?'':'none');}
+ if(e.target.id==='report-search')applyReportFilters();
 });
 const first=routeFromHash();
 go(first,{hash:false});
